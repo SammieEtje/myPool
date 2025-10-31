@@ -1,2 +1,345 @@
-# myPool
-Attempt to write my own F1 pool application
+# F1 Betting Pool 🏎️
+
+A modern, responsive web application for Formula 1 betting pools among friends. Built with Django, Django REST Framework, and vanilla JavaScript.
+
+![Racing Theme](https://img.shields.io/badge/Racing-F1-DC0000?style=for-the-badge)
+![Django](https://img.shields.io/badge/Django-5.0-092E20?style=for-the-badge&logo=django)
+![Python](https://img.shields.io/badge/Python-3.11-3776AB?style=for-the-badge&logo=python)
+
+## Features
+
+### Core Functionality
+- **User Authentication** - Social login (Google, GitHub) with optional Multi-Factor Authentication (MFA)
+- **Competition Management** - Administrators can create and manage F1 seasons/championships
+- **Race Betting** - Users predict Top 10 finishing positions for each race
+- **Deadline Management** - Betting automatically closes at race start time
+- **Points System** - Configurable scoring for exact position matches and correct driver predictions
+- **Live Leaderboard** - Real-time rankings and competition standings
+- **Race Results** - View historical race results and your prediction accuracy
+- **Responsive Design** - Mobile-first, racing-inspired UI with dark theme
+
+### Admin Features
+- Comprehensive Django admin panel for managing all aspects
+- Create competitions, add races, manage drivers
+- Enter race results manually or via API integration
+- Score races and update standings with management commands
+- View user statistics and betting history
+
+### Technical Features
+- RESTful API with Django REST Framework
+- Single Page Application (SPA) architecture
+- Responsive, mobile-first design
+- Racing-inspired color scheme (Red, Electric Blue, Gold)
+- Extensible bet types system (ready for future bet types)
+- OpenF1 API integration with manual entry fallback
+- Azure-ready deployment configuration
+
+## Quick Start
+
+### Prerequisites
+- Python 3.11+
+- pip
+- Virtual environment (recommended)
+
+### Installation
+
+1. **Clone the repository**
+```bash
+git clone <your-repo-url>
+cd myPool
+```
+
+2. **Create and activate virtual environment**
+```bash
+python3 -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+```
+
+3. **Install dependencies**
+```bash
+pip install -r requirements.txt
+```
+
+4. **Set up environment variables**
+```bash
+cp .env.example .env
+# Edit .env with your configuration
+```
+
+5. **Run migrations**
+```bash
+python manage.py migrate
+```
+
+6. **Seed the database with sample data**
+```bash
+python manage.py seed_data
+```
+
+This will create:
+- Admin user: `admin` / `admin123`
+- 5 test users: `testuser1-5` / `test123`
+- 20 F1 drivers (2024 grid)
+- 2025 F1 Championship with 24 races
+- Default bet types
+
+7. **Run the development server**
+```bash
+python manage.py runserver
+```
+
+8. **Access the application**
+- Frontend: http://localhost:8000
+- Admin Panel: http://localhost:8000/admin
+- API: http://localhost:8000/api/
+
+## Project Structure
+
+```
+myPool/
+├── f1betting/              # Django project settings
+│   ├── settings.py        # Configuration
+│   ├── urls.py            # URL routing
+│   └── wsgi.py            # WSGI application
+├── betting/               # Main betting app
+│   ├── models.py          # Database models
+│   ├── views.py           # API views
+│   ├── serializers.py     # DRF serializers
+│   ├── admin.py           # Admin configuration
+│   ├── signals.py         # User profile signals
+│   ├── f1_api.py          # F1 API integration
+│   └── management/        # Management commands
+│       └── commands/
+│           ├── seed_data.py    # Database seeding
+│           └── score_race.py   # Bet scoring
+├── templates/             # HTML templates
+│   └── index.html         # SPA main template
+├── static/                # Static assets
+│   ├── css/
+│   │   ├── design-system.css  # Design system
+│   │   └── main.css           # Main styles
+│   └── js/
+│       └── app.js         # Frontend JavaScript
+├── requirements.txt       # Python dependencies
+├── .env.example          # Environment variables template
+├── azure-deploy.yml      # Azure deployment config
+├── startup.sh            # Azure startup script
+└── README.md             # This file
+```
+
+## Database Models
+
+### Core Models
+- **UserProfile** - Extended user information with betting statistics
+- **Competition** - F1 season/championship
+- **Race** - Individual F1 race with betting deadline
+- **Driver** - F1 driver information
+- **BetType** - Extensible bet type definitions
+- **Bet** - User predictions for races
+- **RaceResult** - Actual race results
+- **CompetitionStanding** - Leaderboard rankings
+
+## API Endpoints
+
+### Competitions
+- `GET /api/competitions/` - List all published competitions
+- `GET /api/competitions/{id}/` - Competition details
+- `GET /api/competitions/{id}/races/` - Races in competition
+- `GET /api/competitions/{id}/standings/` - Leaderboard
+- `POST /api/competitions/{id}/join/` - Join competition
+
+### Races
+- `GET /api/races/` - List races (filter by competition, status, upcoming)
+- `GET /api/races/{id}/` - Race details with results and user bets
+- `GET /api/races/{id}/results/` - Race results
+- `GET /api/races/{id}/my_bet/` - Current user's bet
+
+### Bets
+- `GET /api/bets/` - User's bets
+- `POST /api/bets/` - Create single bet
+- `POST /api/bets/bulk_create/` - Create multiple bets (Top 10)
+- `GET /api/bets/my_bets/` - All user bets (filterable)
+
+### Other Endpoints
+- `GET /api/drivers/` - List active drivers
+- `GET /api/bet-types/` - List active bet types
+- `GET /api/profiles/me/` - Current user profile
+- `GET /api/standings/` - Competition standings
+
+## Management Commands
+
+### Seed Database
+```bash
+python manage.py seed_data [--clear]
+```
+Populates the database with sample F1 data for testing.
+
+### Score Race
+```bash
+python manage.py score_race <race_id>
+```
+Calculates points for all bets in a race and updates standings.
+
+Example workflow:
+1. Race finishes
+2. Admin enters results in Django admin
+3. Run `python manage.py score_race 1`
+4. Standings automatically update
+
+## Scoring System
+
+The default scoring system awards:
+- **10 points** - Exact position match (e.g., predicted P1, driver finished P1)
+- **5 points** - Correct driver in top 10 (e.g., predicted P3, driver finished P7)
+- **0 points** - Driver not in top 10 or incorrect prediction
+
+Administrators can customize point values per competition.
+
+## Deployment
+
+### Azure App Service
+
+1. **Create Azure Web App**
+```bash
+az webapp create \
+  --resource-group myResourceGroup \
+  --plan myAppServicePlan \
+  --name f1-betting-pool \
+  --runtime "PYTHON:3.11"
+```
+
+2. **Configure environment variables**
+```bash
+az webapp config appsettings set \
+  --resource-group myResourceGroup \
+  --name f1-betting-pool \
+  --settings \
+    SECRET_KEY="your-secret-key" \
+    DEBUG="False" \
+    ALLOWED_HOSTS="your-domain.azurewebsites.net"
+```
+
+3. **Deploy**
+```bash
+az webapp up \
+  --resource-group myResourceGroup \
+  --name f1-betting-pool \
+  --sku B1
+```
+
+### Production Checklist
+- [ ] Set `DEBUG=False` in production
+- [ ] Use strong `SECRET_KEY`
+- [ ] Configure proper `ALLOWED_HOSTS`
+- [ ] Set up PostgreSQL or Azure SQL (migrate from SQLite)
+- [ ] Configure email backend for MFA
+- [ ] Set up social auth credentials (Google, GitHub)
+- [ ] Enable HTTPS/SSL
+- [ ] Set up automated backups
+- [ ] Configure logging and monitoring
+
+## Design System
+
+### Color Palette
+- **Primary Red**: #DC0000 (Racing theme)
+- **Secondary Blue**: #00D9FF (Electric, energetic)
+- **Accent Gold**: #FFD700 (1st place)
+- **Accent Silver**: #C0C0C0 (2nd place)
+- **Accent Bronze**: #CD7F32 (3rd place)
+- **Dark Backgrounds**: #0A0A0A to #4A4A4A
+- **Status Colors**: Success, Warning, Error, Info
+
+### Typography
+- **Primary Font**: Inter (body text)
+- **Display Font**: Rajdhani (headings, racing aesthetic)
+
+### Components
+Reusable components are defined in `/static/css/design-system.css`:
+- Buttons (Primary, Secondary, Outline, Ghost)
+- Cards (Standard, Racing-themed)
+- Badges (Position, Status)
+- Forms (Inputs, Selects, Textareas)
+- Tables (Leaderboards, results)
+- Modals
+- Loading states
+
+## Future Enhancements
+
+- [ ] Additional bet types (Podium, Winner, Pole Position, Fastest Lap)
+- [ ] Live race updates via WebSockets
+- [ ] Email notifications for race results and standings
+- [ ] Mobile app (React Native)
+- [ ] Private/public competitions
+- [ ] Betting history analytics and statistics
+- [ ] Social features (comments, chat)
+- [ ] Multi-sport support (MotoGP, NASCAR, etc.)
+- [ ] Betting marketplace/trading
+- [ ] Achievement badges and rewards
+
+## Development
+
+### Running Tests
+```bash
+python manage.py test
+```
+
+### Code Formatting
+```bash
+black .
+flake8 .
+```
+
+### Database Migrations
+```bash
+python manage.py makemigrations
+python manage.py migrate
+```
+
+### Creating Superuser
+```bash
+python manage.py createsuperuser
+```
+
+## Troubleshooting
+
+### Static files not loading
+```bash
+python manage.py collectstatic --clear
+```
+
+### Database issues
+```bash
+# Reset database (WARNING: Deletes all data)
+rm db.sqlite3
+python manage.py migrate
+python manage.py seed_data
+```
+
+### Authentication issues
+Clear browser cookies and cache, then try logging in again.
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Support
+
+For issues, questions, or suggestions, please open an issue on GitHub.
+
+## Acknowledgments
+
+- F1 data provided by OpenF1 API
+- Inspired by the excitement of Formula 1 racing
+- Built for racing enthusiasts who love to compete
+
+---
+
+Built with ❤️ for F1 fans. Let the racing begin! 🏁

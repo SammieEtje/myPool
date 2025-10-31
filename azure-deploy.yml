@@ -1,0 +1,18 @@
+# Azure Web App deployment configuration
+# For use with Azure App Service
+
+runtime:
+  python: "3.11"
+
+startup_command: "gunicorn f1betting.wsgi:application --bind=0.0.0.0:$PORT --workers=4"
+
+build:
+  - pip install -r requirements.txt
+  - python manage.py collectstatic --noinput
+  - python manage.py migrate --noinput
+
+environment:
+  - name: PYTHONUNBUFFERED
+    value: "1"
+  - name: PORT
+    value: "8000"
