@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="F1 Betting Pool - Compete with friends and predict Formula 1 race results">
+    <title>F1 Betting Pool</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
+
+    <!-- Styles -->
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/design-system.css' %}">
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+</head>
+<body>
+    <div class="app-wrapper">
+        <!-- HEADER -->
+        <header class="app-header">
+            <div class="container">
+                <nav class="navbar">
+                    <div class="navbar-brand">
+                        <div class="navbar-brand-icon">🏎️</div>
+                        <span>F1 Betting Pool</span>
+                    </div>
+
+                    <ul class="navbar-nav" id="mainNav">
+                        <li><a href="#" class="nav-link active" data-page="competitions">Competitions</a></li>
+                        <li><a href="#" class="nav-link" data-page="races">Races</a></li>
+                        <li><a href="#" class="nav-link" data-page="my-bets">My Bets</a></li>
+                        <li><a href="#" class="nav-link" data-page="leaderboard">Leaderboard</a></li>
+                    </ul>
+
+                    <div class="user-menu">
+                        <div id="authSection">
+                            <!-- Will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </nav>
+            </div>
+        </header>
+
+        <!-- MAIN CONTENT -->
+        <main class="app-main">
+            <div class="container">
+                <div id="appContent">
+                    <!-- Dynamic content will be loaded here -->
+                </div>
+            </div>
+        </main>
+
+        <!-- FOOTER -->
+        <footer style="text-align: center; padding: 2rem; color: var(--color-text-muted); border-top: 1px solid var(--color-dark-700);">
+            <p>&copy; 2024 F1 Betting Pool. Built for racing enthusiasts.</p>
+        </footer>
+    </div>
+
+    <!-- TEMPLATES -->
+    <!-- Competitions Page Template -->
+    <template id="template-competitions">
+        <div class="page-header">
+            <h1 class="page-title">Active Competitions</h1>
+            <p class="page-subtitle">Join a competition and start predicting race results</p>
+        </div>
+
+        <div id="competitionsList" class="grid grid-cols-3">
+            <!-- Competitions will be loaded here -->
+        </div>
+
+        <div class="loading hidden" id="competitionsLoading">
+            <div class="spinner"></div>
+        </div>
+
+        <div class="empty-state hidden" id="competitionsEmpty">
+            <div class="empty-state-icon">🏆</div>
+            <h3>No competitions available</h3>
+            <p>Check back later for new competitions</p>
+        </div>
+    </template>
+
+    <!-- Competition Card Template -->
+    <template id="template-competition-card">
+        <div class="card competition-card">
+            <div class="competition-card-status">
+                <span class="badge badge-primary competition-status"></span>
+            </div>
+            <div class="card-body">
+                <div class="competition-card-year"></div>
+                <h3 class="card-title competition-name"></h3>
+                <p class="competition-description"></p>
+                <div class="competition-card-stats">
+                    <div class="stat">
+                        <div class="stat-value competition-races-count"></div>
+                        <div class="stat-label">Races</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value competition-participants-count"></div>
+                        <div class="stat-label">Participants</div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <button class="btn btn-primary btn-join-competition" data-competition-id="">
+                    Join Competition
+                </button>
+                <button class="btn btn-secondary btn-view-competition" data-competition-id="">
+                    View Details
+                </button>
+            </div>
+        </div>
+    </template>
+
+    <!-- Races Page Template -->
+    <template id="template-races">
+        <div class="page-header">
+            <h1 class="page-title">Upcoming Races</h1>
+            <p class="page-subtitle">Place your bets before the deadline</p>
+        </div>
+
+        <div class="mb-lg">
+            <select class="form-select" id="raceFilterCompetition" style="max-width: 300px;">
+                <option value="">All Competitions</option>
+            </select>
+        </div>
+
+        <div id="racesList" class="grid grid-cols-2">
+            <!-- Races will be loaded here -->
+        </div>
+
+        <div class="loading hidden" id="racesLoading">
+            <div class="spinner"></div>
+        </div>
+
+        <div class="empty-state hidden" id="racesEmpty">
+            <div class="empty-state-icon">🏁</div>
+            <h3>No races available</h3>
+            <p>Check back later for upcoming races</p>
+        </div>
+    </template>
+
+    <!-- Race Card Template -->
+    <template id="template-race-card">
+        <div class="card card-race race-card">
+            <div class="race-card-header">
+                <div>
+                    <div class="race-round"></div>
+                    <h3 class="race-name"></h3>
+                    <p class="race-location"></p>
+                </div>
+                <span class="badge race-status-badge"></span>
+            </div>
+            <div class="race-meta">
+                <div class="race-date">
+                    <span>📅</span>
+                    <span class="race-datetime"></span>
+                </div>
+                <div class="race-deadline">
+                    <span>⏰</span>
+                    <span class="race-deadline-text"></span>
+                </div>
+            </div>
+            <div class="card-footer">
+                <button class="btn btn-primary btn-place-bet" data-race-id="">
+                    Place Bet
+                </button>
+                <button class="btn btn-outline btn-view-results" data-race-id="">
+                    View Results
+                </button>
+            </div>
+        </div>
+    </template>
+
+    <!-- Leaderboard Template -->
+    <template id="template-leaderboard">
+        <div class="page-header">
+            <h1 class="page-title">Leaderboard</h1>
+            <p class="page-subtitle">See who's leading the pack</p>
+        </div>
+
+        <div class="mb-lg">
+            <select class="form-select" id="leaderboardFilterCompetition" style="max-width: 300px;">
+                <option value="">Select Competition</option>
+            </select>
+        </div>
+
+        <div id="leaderboardList">
+            <!-- Leaderboard items will be loaded here -->
+        </div>
+
+        <div class="loading hidden" id="leaderboardLoading">
+            <div class="spinner"></div>
+        </div>
+
+        <div class="empty-state hidden" id="leaderboardEmpty">
+            <div class="empty-state-icon">🏆</div>
+            <h3>No standings available</h3>
+            <p>Select a competition to view the leaderboard</p>
+        </div>
+    </template>
+
+    <!-- Leaderboard Item Template -->
+    <template id="template-leaderboard-item">
+        <div class="leaderboard-item">
+            <div class="leaderboard-rank"></div>
+            <div class="leaderboard-user">
+                <div class="leaderboard-name"></div>
+                <div class="leaderboard-stats">
+                    <span class="stat-exact-predictions"></span>
+                    <span>•</span>
+                    <span class="stat-races-predicted"></span>
+                </div>
+            </div>
+            <div class="leaderboard-points"></div>
+        </div>
+    </template>
+
+    <!-- My Bets Template -->
+    <template id="template-my-bets">
+        <div class="page-header">
+            <h1 class="page-title">My Bets</h1>
+            <p class="page-subtitle">Track your predictions and scores</p>
+        </div>
+
+        <div class="mb-lg">
+            <select class="form-select" id="myBetsFilterCompetition" style="max-width: 300px;">
+                <option value="">All Competitions</option>
+            </select>
+        </div>
+
+        <div id="myBetsList">
+            <!-- Bets will be loaded here -->
+        </div>
+
+        <div class="loading hidden" id="myBetsLoading">
+            <div class="spinner"></div>
+        </div>
+
+        <div class="empty-state hidden" id="myBetsEmpty">
+            <div class="empty-state-icon">🎯</div>
+            <h3>No bets placed yet</h3>
+            <p>Start placing bets on upcoming races</p>
+            <button class="btn btn-primary mt-lg" onclick="app.loadPage('races')">
+                View Races
+            </button>
+        </div>
+    </template>
+
+    <!-- Betting Modal Template -->
+    <template id="template-betting-modal">
+        <div class="modal-overlay" id="bettingModal">
+            <div class="modal">
+                <div class="modal-header">
+                    <h2 class="modal-title">Place Your Bet</h2>
+                    <button class="modal-close" onclick="app.closeBettingModal()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div id="bettingFormContent">
+                        <h3 class="race-modal-name mb-lg"></h3>
+
+                        <p class="text-muted mb-lg">
+                            Select your top 10 finishing positions for this race.
+                            Drag to reorder or click to select drivers.
+                        </p>
+
+                        <div id="driverSelector" class="driver-selector">
+                            <!-- Drivers will be loaded here -->
+                        </div>
+
+                        <div class="mt-xl">
+                            <h4 class="mb-md">Your Top 10 Predictions</h4>
+                            <div id="selectedDriversList" class="mb-lg">
+                                <!-- Selected drivers will appear here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-ghost" onclick="app.closeBettingModal()">
+                        Cancel
+                    </button>
+                    <button class="btn btn-primary" id="submitBetButton" onclick="app.submitBet()">
+                        Submit Bet
+                    </button>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- JavaScript -->
+    <script src="{% static 'js/app.js' %}"></script>
+</body>
+</html>
