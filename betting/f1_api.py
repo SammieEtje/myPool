@@ -84,70 +84,87 @@ class F1API:
 
 def get_sample_f1_drivers():
     """
-    Return sample F1 driver data for 2024 season
-    Use this as fallback when API is not available
+    Return F1 2025 driver lineup
+    Based on confirmed 2025 driver changes and team lineups
     """
     return [
+        # Red Bull Racing
         {'number': 1, 'first_name': 'Max', 'last_name': 'Verstappen', 'team': 'Red Bull Racing', 'nationality': 'Dutch'},
         {'number': 11, 'first_name': 'Sergio', 'last_name': 'Perez', 'team': 'Red Bull Racing', 'nationality': 'Mexican'},
-        {'number': 44, 'first_name': 'Lewis', 'last_name': 'Hamilton', 'team': 'Mercedes', 'nationality': 'British'},
-        {'number': 63, 'first_name': 'George', 'last_name': 'Russell', 'team': 'Mercedes', 'nationality': 'British'},
+
+        # Ferrari (Lewis Hamilton joins!)
         {'number': 16, 'first_name': 'Charles', 'last_name': 'Leclerc', 'team': 'Ferrari', 'nationality': 'Monégasque'},
-        {'number': 55, 'first_name': 'Carlos', 'last_name': 'Sainz', 'team': 'Ferrari', 'nationality': 'Spanish'},
+        {'number': 44, 'first_name': 'Lewis', 'last_name': 'Hamilton', 'team': 'Ferrari', 'nationality': 'British'},
+
+        # Mercedes (Antonelli replaces Hamilton)
+        {'number': 63, 'first_name': 'George', 'last_name': 'Russell', 'team': 'Mercedes', 'nationality': 'British'},
+        {'number': 12, 'first_name': 'Andrea', 'last_name': 'Kimi Antonelli', 'team': 'Mercedes', 'nationality': 'Italian'},
+
+        # McLaren
         {'number': 4, 'first_name': 'Lando', 'last_name': 'Norris', 'team': 'McLaren', 'nationality': 'British'},
         {'number': 81, 'first_name': 'Oscar', 'last_name': 'Piastri', 'team': 'McLaren', 'nationality': 'Australian'},
+
+        # Aston Martin
         {'number': 14, 'first_name': 'Fernando', 'last_name': 'Alonso', 'team': 'Aston Martin', 'nationality': 'Spanish'},
         {'number': 18, 'first_name': 'Lance', 'last_name': 'Stroll', 'team': 'Aston Martin', 'nationality': 'Canadian'},
+
+        # Alpine (Doohan joins)
         {'number': 10, 'first_name': 'Pierre', 'last_name': 'Gasly', 'team': 'Alpine', 'nationality': 'French'},
-        {'number': 31, 'first_name': 'Esteban', 'last_name': 'Ocon', 'team': 'Alpine', 'nationality': 'French'},
+        {'number': 61, 'first_name': 'Jack', 'last_name': 'Doohan', 'team': 'Alpine', 'nationality': 'Australian'},
+
+        # Williams (Sainz joins)
         {'number': 23, 'first_name': 'Alexander', 'last_name': 'Albon', 'team': 'Williams', 'nationality': 'Thai'},
-        {'number': 2, 'first_name': 'Logan', 'last_name': 'Sargeant', 'team': 'Williams', 'nationality': 'American'},
+        {'number': 55, 'first_name': 'Carlos', 'last_name': 'Sainz', 'team': 'Williams', 'nationality': 'Spanish'},
+
+        # Haas (Ocon joins)
         {'number': 27, 'first_name': 'Nico', 'last_name': 'Hulkenberg', 'team': 'Haas F1 Team', 'nationality': 'German'},
-        {'number': 20, 'first_name': 'Kevin', 'last_name': 'Magnussen', 'team': 'Haas F1 Team', 'nationality': 'Danish'},
-        {'number': 77, 'first_name': 'Valtteri', 'last_name': 'Bottas', 'team': 'Alfa Romeo', 'nationality': 'Finnish'},
-        {'number': 24, 'first_name': 'Zhou', 'last_name': 'Guanyu', 'team': 'Alfa Romeo', 'nationality': 'Chinese'},
-        {'number': 3, 'first_name': 'Daniel', 'last_name': 'Ricciardo', 'team': 'AlphaTauri', 'nationality': 'Australian'},
-        {'number': 22, 'first_name': 'Yuki', 'last_name': 'Tsunoda', 'team': 'AlphaTauri', 'nationality': 'Japanese'},
+        {'number': 31, 'first_name': 'Esteban', 'last_name': 'Ocon', 'team': 'Haas F1 Team', 'nationality': 'French'},
+
+        # Kick Sauber (future Audi)
+        {'number': 77, 'first_name': 'Valtteri', 'last_name': 'Bottas', 'team': 'Kick Sauber', 'nationality': 'Finnish'},
+        {'number': 24, 'first_name': 'Zhou', 'last_name': 'Guanyu', 'team': 'Kick Sauber', 'nationality': 'Chinese'},
+
+        # RB (Lawson joins)
+        {'number': 22, 'first_name': 'Yuki', 'last_name': 'Tsunoda', 'team': 'RB F1 Team', 'nationality': 'Japanese'},
+        {'number': 40, 'first_name': 'Liam', 'last_name': 'Lawson', 'team': 'RB F1 Team', 'nationality': 'New Zealander'},
     ]
 
 
 def get_sample_f1_schedule():
     """
-    Return sample F1 race schedule for 2025
-    Use this as fallback when API is not available
+    Return F1 2025 race schedule
+    Based on provisional 2025 calendar
     """
-    base_date = datetime(2025, 3, 1)
-
     races = [
-        {'name': 'Bahrain Grand Prix', 'location': 'Bahrain International Circuit', 'country': 'Bahrain'},
-        {'name': 'Saudi Arabian Grand Prix', 'location': 'Jeddah Corniche Circuit', 'country': 'Saudi Arabia'},
-        {'name': 'Australian Grand Prix', 'location': 'Albert Park Circuit', 'country': 'Australia'},
-        {'name': 'Japanese Grand Prix', 'location': 'Suzuka Circuit', 'country': 'Japan'},
-        {'name': 'Chinese Grand Prix', 'location': 'Shanghai International Circuit', 'country': 'China'},
-        {'name': 'Miami Grand Prix', 'location': 'Miami International Autodrome', 'country': 'USA'},
-        {'name': 'Emilia Romagna Grand Prix', 'location': 'Autodromo Enzo e Dino Ferrari', 'country': 'Italy'},
-        {'name': 'Monaco Grand Prix', 'location': 'Circuit de Monaco', 'country': 'Monaco'},
-        {'name': 'Canadian Grand Prix', 'location': 'Circuit Gilles Villeneuve', 'country': 'Canada'},
-        {'name': 'Spanish Grand Prix', 'location': 'Circuit de Barcelona-Catalunya', 'country': 'Spain'},
-        {'name': 'Austrian Grand Prix', 'location': 'Red Bull Ring', 'country': 'Austria'},
-        {'name': 'British Grand Prix', 'location': 'Silverstone Circuit', 'country': 'United Kingdom'},
-        {'name': 'Hungarian Grand Prix', 'location': 'Hungaroring', 'country': 'Hungary'},
-        {'name': 'Belgian Grand Prix', 'location': 'Circuit de Spa-Francorchamps', 'country': 'Belgium'},
-        {'name': 'Dutch Grand Prix', 'location': 'Circuit Zandvoort', 'country': 'Netherlands'},
-        {'name': 'Italian Grand Prix', 'location': 'Autodromo Nazionale di Monza', 'country': 'Italy'},
-        {'name': 'Azerbaijan Grand Prix', 'location': 'Baku City Circuit', 'country': 'Azerbaijan'},
-        {'name': 'Singapore Grand Prix', 'location': 'Marina Bay Street Circuit', 'country': 'Singapore'},
-        {'name': 'United States Grand Prix', 'location': 'Circuit of the Americas', 'country': 'USA'},
-        {'name': 'Mexico City Grand Prix', 'location': 'Autódromo Hermanos Rodríguez', 'country': 'Mexico'},
-        {'name': 'Brazilian Grand Prix', 'location': 'Autódromo José Carlos Pace', 'country': 'Brazil'},
-        {'name': 'Las Vegas Grand Prix', 'location': 'Las Vegas Strip Circuit', 'country': 'USA'},
-        {'name': 'Qatar Grand Prix', 'location': 'Losail International Circuit', 'country': 'Qatar'},
-        {'name': 'Abu Dhabi Grand Prix', 'location': 'Yas Marina Circuit', 'country': 'UAE'},
+        {'name': 'Bahrain Grand Prix', 'location': 'Bahrain International Circuit', 'country': 'Bahrain', 'date': datetime(2025, 3, 16, 15, 0)},
+        {'name': 'Saudi Arabian Grand Prix', 'location': 'Jeddah Corniche Circuit', 'country': 'Saudi Arabia', 'date': datetime(2025, 3, 23, 17, 0)},
+        {'name': 'Australian Grand Prix', 'location': 'Albert Park Circuit', 'country': 'Australia', 'date': datetime(2025, 4, 6, 15, 0)},
+        {'name': 'Japanese Grand Prix', 'location': 'Suzuka Circuit', 'country': 'Japan', 'date': datetime(2025, 4, 13, 14, 0)},
+        {'name': 'Chinese Grand Prix', 'location': 'Shanghai International Circuit', 'country': 'China', 'date': datetime(2025, 4, 20, 15, 0)},
+        {'name': 'Miami Grand Prix', 'location': 'Miami International Autodrome', 'country': 'USA', 'date': datetime(2025, 5, 4, 15, 30)},
+        {'name': 'Emilia Romagna Grand Prix', 'location': 'Autodromo Enzo e Dino Ferrari', 'country': 'Italy', 'date': datetime(2025, 5, 18, 15, 0)},
+        {'name': 'Monaco Grand Prix', 'location': 'Circuit de Monaco', 'country': 'Monaco', 'date': datetime(2025, 5, 25, 15, 0)},
+        {'name': 'Spanish Grand Prix', 'location': 'Circuit de Barcelona-Catalunya', 'country': 'Spain', 'date': datetime(2025, 6, 1, 15, 0)},
+        {'name': 'Canadian Grand Prix', 'location': 'Circuit Gilles Villeneuve', 'country': 'Canada', 'date': datetime(2025, 6, 15, 14, 0)},
+        {'name': 'Austrian Grand Prix', 'location': 'Red Bull Ring', 'country': 'Austria', 'date': datetime(2025, 6, 29, 15, 0)},
+        {'name': 'British Grand Prix', 'location': 'Silverstone Circuit', 'country': 'United Kingdom', 'date': datetime(2025, 7, 6, 15, 0)},
+        {'name': 'Belgian Grand Prix', 'location': 'Circuit de Spa-Francorchamps', 'country': 'Belgium', 'date': datetime(2025, 7, 27, 15, 0)},
+        {'name': 'Hungarian Grand Prix', 'location': 'Hungaroring', 'country': 'Hungary', 'date': datetime(2025, 8, 3, 15, 0)},
+        {'name': 'Dutch Grand Prix', 'location': 'Circuit Zandvoort', 'country': 'Netherlands', 'date': datetime(2025, 8, 31, 15, 0)},
+        {'name': 'Italian Grand Prix', 'location': 'Autodromo Nazionale di Monza', 'country': 'Italy', 'date': datetime(2025, 9, 7, 15, 0)},
+        {'name': 'Azerbaijan Grand Prix', 'location': 'Baku City Circuit', 'country': 'Azerbaijan', 'date': datetime(2025, 9, 21, 13, 0)},
+        {'name': 'Singapore Grand Prix', 'location': 'Marina Bay Street Circuit', 'country': 'Singapore', 'date': datetime(2025, 10, 5, 14, 0)},
+        {'name': 'United States Grand Prix', 'location': 'Circuit of the Americas', 'country': 'USA', 'date': datetime(2025, 10, 19, 14, 0)},
+        {'name': 'Mexico City Grand Prix', 'location': 'Autódromo Hermanos Rodríguez', 'country': 'Mexico', 'date': datetime(2025, 10, 26, 14, 0)},
+        {'name': 'Brazilian Grand Prix', 'location': 'Autódromo José Carlos Pace', 'country': 'Brazil', 'date': datetime(2025, 11, 9, 14, 0)},
+        {'name': 'Las Vegas Grand Prix', 'location': 'Las Vegas Strip Circuit', 'country': 'USA', 'date': datetime(2025, 11, 22, 22, 0)},
+        {'name': 'Qatar Grand Prix', 'location': 'Losail International Circuit', 'country': 'Qatar', 'date': datetime(2025, 11, 30, 15, 0)},
+        {'name': 'Abu Dhabi Grand Prix', 'location': 'Yas Marina Circuit', 'country': 'UAE', 'date': datetime(2025, 12, 7, 14, 0)},
     ]
 
     schedule = []
     for i, race in enumerate(races):
-        race_date = base_date + timedelta(weeks=i*2)
+        race_date = race['date']
         deadline = race_date - timedelta(hours=2)
 
         schedule.append({
