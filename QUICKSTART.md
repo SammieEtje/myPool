@@ -15,8 +15,8 @@ source venv/bin/activate
 ```bash
 # Migrations are already run, database is seeded!
 # The database now contains:
-# - Admin user: admin / admin123
-# - 5 test users: testuser1-5 / test123
+# - Admin user: admin@f1betting.com / admin123
+# - 5 test users: user1@test.com to user5@test.com / test123
 # - 20 F1 drivers (2024 grid)
 # - 2025 F1 Championship with 24 races
 # - Default bet types
@@ -100,12 +100,12 @@ Open your browser and visit:
 ## Test Data Available
 
 ### Users
-- **admin** / admin123 (superuser)
-- testuser1 / test123
-- testuser2 / test123
-- testuser3 / test123
-- testuser4 / test123
-- testuser5 / test123
+- **admin@f1betting.com** / admin123 (superuser)
+- user1@test.com / test123
+- user2@test.com / test123
+- user3@test.com / test123
+- user4@test.com / test123
+- user5@test.com / test123
 
 ### Competition
 - F1 2025 World Championship (24 races)

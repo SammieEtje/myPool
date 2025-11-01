@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block head_title %}F1 Betting Pool{% endblock %}</title>
+
+    {% load static %}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{% static 'css/design-system.css' %}">
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+
+    <style>
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--color-dark-900);
+            padding: var(--spacing-lg);
+        }
+
+        .auth-box {
+            background: var(--color-dark-800);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-xl);
+            width: 100%;
+            max-width: 450px;
+            padding: var(--spacing-2xl);
+            border-top: 4px solid var(--color-primary);
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        .auth-logo {
+            font-size: var(--font-size-3xl);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .auth-title {
+            font-family: var(--font-display);
+            font-size: var(--font-size-3xl);
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .auth-subtitle {
+            color: var(--color-text-secondary);
+        }
+
+        .auth-content {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .auth-footer {
+            text-align: center;
+            padding-top: var(--spacing-lg);
+            border-top: 1px solid var(--color-dark-600);
+            color: var(--color-text-secondary);
+        }
+
+        .auth-footer a {
+            color: var(--color-secondary);
+            font-weight: 600;
+        }
+
+        .errorlist {
+            list-style: none;
+            margin-bottom: var(--spacing-md);
+            padding: var(--spacing-md);
+            background: rgba(255, 23, 68, 0.1);
+            border-left: 4px solid var(--color-error);
+            border-radius: var(--radius-md);
+        }
+
+        .errorlist li {
+            color: var(--color-error);
+            font-size: var(--font-size-sm);
+        }
+
+        .messages {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .message {
+            padding: var(--spacing-md);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .message.success {
+            background: rgba(0, 230, 118, 0.1);
+            border-left: 4px solid var(--color-success);
+            color: var(--color-success);
+        }
+
+        .message.error {
+            background: rgba(255, 23, 68, 0.1);
+            border-left: 4px solid var(--color-error);
+            color: var(--color-error);
+        }
+
+        .message.warning {
+            background: rgba(255, 215, 0, 0.1);
+            border-left: 4px solid var(--color-warning);
+            color: var(--color-warning);
+        }
+
+        .message.info {
+            background: rgba(0, 217, 255, 0.1);
+            border-left: 4px solid var(--color-info);
+            color: var(--color-info);
+        }
+
+        .social-login {
+            margin-top: var(--spacing-xl);
+            padding-top: var(--spacing-xl);
+            border-top: 1px solid var(--color-dark-600);
+        }
+
+        .social-login-title {
+            text-align: center;
+            color: var(--color-text-muted);
+            margin-bottom: var(--spacing-md);
+            font-size: var(--font-size-sm);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .socialaccount_providers {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+        }
+
+        .home-link {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            color: var(--color-text-secondary);
+            margin-bottom: var(--spacing-lg);
+            font-size: var(--font-size-sm);
+            transition: color var(--transition-fast);
+        }
+
+        .home-link:hover {
+            color: var(--color-text-primary);
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-box">
+            <a href="/" class="home-link">
+                ← Back to Home
+            </a>
+
+            <div class="auth-header">
+                <div class="auth-logo">🏎️</div>
+                <h1 class="auth-title">{% block header_title %}F1 Betting Pool{% endblock %}</h1>
+                <p class="auth-subtitle">{% block header_subtitle %}Race predictions with friends{% endblock %}</p>
+            </div>
+
+            {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                <div class="message {{ message.tags }}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="auth-content">
+                {% block content %}
+                {% endblock %}
+            </div>
+
+            <div class="auth-footer">
+                {% block footer %}
+                {% endblock %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>
