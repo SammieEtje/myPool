@@ -1,0 +1,254 @@
+{% extends "admin/index.html" %}
+{% load i18n static %}
+
+{% block extrahead %}
+{{ block.super }}
+<style>
+    .statistics-dashboard {
+        margin: 20px 0;
+        padding: 20px;
+        background: #f8f8f8;
+        border-radius: 8px;
+    }
+
+    .statistics-dashboard h2 {
+        color: #417690;
+        margin-bottom: 20px;
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-bottom: 25px;
+    }
+
+    .stat-card {
+        background: white;
+        padding: 15px;
+        border-radius: 6px;
+        border-left: 4px solid #417690;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+
+    .stat-card.users { border-left-color: #DC0000; }
+    .stat-card.competitions { border-left-color: #00D9FF; }
+    .stat-card.races { border-left-color: #FFB800; }
+    .stat-card.drivers { border-left-color: #00C851; }
+    .stat-card.bets { border-left-color: #9C27B0; }
+    .stat-card.results { border-left-color: #FF6F00; }
+
+    .stat-card h3 {
+        margin: 0 0 10px 0;
+        font-size: 14px;
+        color: #666;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .stat-value {
+        font-size: 32px;
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 8px;
+    }
+
+    .stat-details {
+        font-size: 12px;
+        color: #777;
+        margin-top: 8px;
+        padding-top: 8px;
+        border-top: 1px solid #eee;
+    }
+
+    .stat-detail-item {
+        display: flex;
+        justify-content: space-between;
+        margin: 3px 0;
+    }
+
+    .stat-detail-label {
+        color: #666;
+    }
+
+    .stat-detail-value {
+        font-weight: 600;
+        color: #333;
+    }
+
+    .statistics-section {
+        margin-bottom: 30px;
+    }
+
+    .statistics-section:last-child {
+        margin-bottom: 0;
+    }
+
+    .section-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 15px;
+        padding-bottom: 8px;
+        border-bottom: 2px solid #417690;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+{{ block.super }}
+
+{% if statistics %}
+<div class="statistics-dashboard">
+    <h2>📊 System Statistics</h2>
+
+    <!-- Core Entities -->
+    <div class="statistics-section">
+        <div class="section-title">Core Entities</div>
+        <div class="stats-grid">
+            <div class="stat-card users">
+                <h3>👥 Users</h3>
+                <div class="stat-value">{{ statistics.users.total }}</div>
+                <div class="stat-details">
+                    <div class="stat-detail-item">
+                        <span class="stat-detail-label">Active:</span>
+                        <span class="stat-detail-value">{{ statistics.users.active }}</span>
+                    </div>
+                    <div class="stat-detail-item">
+                        <span class="stat-detail-label">Superusers:</span>
+                        <span class="stat-detail-value">{{ statistics.users.superusers }}</span>
+                    </div>
+                    <div class="stat-detail-item">
+                        <span class="stat-detail-label">With Bets:</span>
+                        <span class="stat-detail-value">{{ statistics.users.with_bets }}</span>
+                    </div>
+                    <div class="stat-detail-item">
+                        <span class="stat-detail-label">Groups:</span>
+                        <span class="stat-detail-value">{{ statistics.users.groups }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stat-card competitions">
+                <h3>🏆 Competitions</h3>
+                <div class="stat-value">{{ statistics.competitions.total }}</div>
+                <div class="stat-details">
+                    <div class="stat-detail-item">
+                        <span class="stat-detail-label">Active:</span>
+                        <span class="stat-detail-value">{{ statistics.competitions.active }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stat-card drivers">
+                <h3>🏎️ Drivers</h3>
+                <div class="stat-value">{{ statistics.drivers.total }}</div>
+                <div class="stat-details">
+                    <div class="stat-detail-item">
+                        <span class="stat-detail-label">Active:</span>
+                        <span class="stat-detail-value">{{ statistics.drivers.active }}</span>
+                    </div>
+                    <div class="stat-detail-item">
+                        <span class="stat-detail-label">Inactive:</span>
+                        <span class="stat-detail-value">{{ statistics.drivers.inactive }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Racing Data -->
+    <div class="statistics-section">
+        <div class="section-title">Racing Data</div>
+        <div class="stats-grid">
+            <div class="stat-card races">
+                <h3>🏁 Races</h3>
+                <div class="stat-value">{{ statistics.races.total }}</div>
+                <div class="stat-details">
+                    <div class="stat-detail-item">
+                        <span class="stat-detail-label">Completed:</span>
+                        <span class="stat-detail-value">{{ statistics.races.completed }}</span>
+                    </div>
+                    <div class="stat-detail-item">
+                        <span class="stat-detail-label">Upcoming:</span>
+                        <span class="stat-detail-value">{{ statistics.races.upcoming }}</span>
+                    </div>
+                    <div class="stat-detail-item">
+                        <span class="stat-detail-label">Pending:</span>
+                        <span class="stat-detail-value">{{ statistics.races.pending }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stat-card results">
+                <h3>📋 Race Results</h3>
+                <div class="stat-value">{{ statistics.results.total }}</div>
+                <div class="stat-details">
+                    <div class="stat-detail-item">
+                        <span class="stat-detail-label">Verified:</span>
+                        <span class="stat-detail-value">{{ statistics.results.verified }}</span>
+                    </div>
+                    <div class="stat-detail-item">
+                        <span class="stat-detail-label">Unverified:</span>
+                        <span class="stat-detail-value">{{ statistics.results.unverified }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Betting Activity -->
+    <div class="statistics-section">
+        <div class="section-title">Betting Activity</div>
+        <div class="stats-grid">
+            <div class="stat-card bets">
+                <h3>🎯 Bets</h3>
+                <div class="stat-value">{{ statistics.bets.total }}</div>
+                <div class="stat-details">
+                    <div class="stat-detail-item">
+                        <span class="stat-detail-label">Scored:</span>
+                        <span class="stat-detail-value">{{ statistics.bets.scored }}</span>
+                    </div>
+                    <div class="stat-detail-item">
+                        <span class="stat-detail-label">Unscored:</span>
+                        <span class="stat-detail-value">{{ statistics.bets.unscored }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <h3>📝 Bet Types</h3>
+                <div class="stat-value">{{ statistics.bet_types.total }}</div>
+                <div class="stat-details">
+                    <div class="stat-detail-item">
+                        <span class="stat-detail-label">Active:</span>
+                        <span class="stat-detail-value">{{ statistics.bet_types.active }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <h3>📊 Standings</h3>
+                <div class="stat-value">{{ statistics.standings.total }}</div>
+                <div class="stat-details">
+                    <div class="stat-detail-item">
+                        <span class="stat-detail-label">Total Entries:</span>
+                        <span class="stat-detail-value">{{ statistics.standings.total }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}
