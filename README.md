@@ -77,8 +77,8 @@ python manage.py seed_data
 ```
 
 This will create:
-- Admin user: `admin` / `admin123`
-- 5 test users: `testuser1-5` / `test123`
+- Admin user: `admin@f1betting.com` / `admin123`
+- 5 test users: `user1@test.com` to `user5@test.com` / `test123`
 - 20 F1 drivers (2024 grid)
 - 2025 F1 Championship with 24 races
 - Default bet types
