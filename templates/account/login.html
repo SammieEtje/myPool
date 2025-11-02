@@ -6,6 +6,8 @@
 {% block header_subtitle %}Welcome back, racer!{% endblock %}
 
 {% block content %}
+{% get_providers as socialaccount_providers %}
+
 <form method="POST" action="{% url 'account_login' %}">
     {% csrf_token %}
 

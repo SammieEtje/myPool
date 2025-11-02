@@ -6,6 +6,8 @@
 {% block header_subtitle %}Join the race!{% endblock %}
 
 {% block content %}
+{% get_providers as socialaccount_providers %}
+
 <form method="POST" action="{% url 'account_signup' %}">
     {% csrf_token %}
 
