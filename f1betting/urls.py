@@ -33,9 +33,6 @@ urlpatterns = [
 
     # Frontend SPA (catch-all for client-side routing)
     path("", TemplateView.as_view(template_name="index.html"), name="home"),
-
-    # Blog
-    path("blog/", include("blog.urls")),
 ]
 
 # Serve media files in development
