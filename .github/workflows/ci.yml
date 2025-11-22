@@ -111,7 +111,7 @@ jobs:
 
     - name: Check for known security vulnerabilities
       run: |
-        safety check --json || true
+        safety scan --json || true
       continue-on-error: true
 
     - name: Run Bandit security linter
