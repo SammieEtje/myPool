@@ -1,0 +1,57 @@
+[tool.black]
+line-length = 127
+target-version = ['py311']
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+  | migrations
+  | static
+  | media
+)/
+'''
+
+[tool.isort]
+profile = "black"
+line_length = 127
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
+ensure_newline_before_comments = true
+skip_glob = ["*/migrations/*", "*/static/*", "*/media/*"]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "f1betting.settings"
+python_files = ["tests.py", "test_*.py", "*_tests.py"]
+testpaths = ["betting/tests"]
+addopts = "--verbose --cov=betting --cov-report=term-missing"
+
+[tool.coverage.run]
+source = ["."]
+omit = [
+    "*/tests/*",
+    "*/migrations/*",
+    "*/static/*",
+    "*/media/*",
+    "venv/*",
+    "env/*",
+    "manage.py",
+    "*/wsgi.py",
+    "*/asgi.py",
+    "*/settings.py",
+    "*/apps.py",
+]
+
+[tool.coverage.report]
+precision = 2
+show_missing = true
+skip_covered = false

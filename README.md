@@ -108,6 +108,7 @@ python manage.py runserver
 
 ### For Developers
 - **[Quick Start Guide](QUICKSTART.md)** - Fast setup instructions for development
+- **[Testing Guide](TESTING.md)** - Comprehensive testing documentation and CI/CD information
 - **README.md** (this file) - Project overview and technical documentation
 
 ## Project Structure
@@ -310,14 +311,54 @@ Reusable components are defined in `/static/css/design-system.css`:
 ## Development
 
 ### Running Tests
+
+Run all tests:
 ```bash
 python manage.py test
 ```
 
-### Code Formatting
+Run tests with pytest (recommended):
+```bash
+pytest
+```
+
+Run tests with coverage:
+```bash
+pytest --cov=betting --cov-report=html
+```
+
+📚 **For detailed testing information, see [TESTING.md](TESTING.md)**
+
+### Continuous Integration
+
+The project uses GitHub Actions for automated testing:
+- ✅ Test suite on Python 3.11 & 3.12
+- ✅ Code quality checks (flake8, black, isort)
+- ✅ Security scanning (safety, bandit)
+- ✅ Integration tests
+- ✅ Performance tests
+- ✅ Code coverage reports
+
+### Code Quality
+
+Format code:
 ```bash
 black .
+```
+
+Lint code:
+```bash
 flake8 .
+```
+
+Sort imports:
+```bash
+isort .
+```
+
+Run all quality checks:
+```bash
+flake8 . && black --check . && isort --check-only .
 ```
 
 ### Database Migrations
@@ -329,6 +370,13 @@ python manage.py migrate
 ### Creating Superuser
 ```bash
 python manage.py createsuperuser
+```
+
+### Development Dependencies
+
+Install all development and testing dependencies:
+```bash
+pip install -r requirements-dev.txt
 ```
 
 ## Troubleshooting
