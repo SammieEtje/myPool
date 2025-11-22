@@ -109,9 +109,12 @@ jobs:
         python -m pip install --upgrade pip
         pip install safety bandit
 
-    - name: Check for known security vulnerabilities
-      run: |
-        safety scan --json || true
+    - name: Check for known security 
+      uses: pyupio/safety-action@v1
+      with:
+        api-key: ${{ secrets.SAFETY_API_KEY }}
+      # run: |
+      #   safety scan --json || true
       continue-on-error: true
 
     - name: Run Bandit security linter
