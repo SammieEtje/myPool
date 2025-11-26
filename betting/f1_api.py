@@ -6,6 +6,7 @@ Fallback to manual entry if API is unavailable
 
 import requests
 from django.conf import settings
+from django.utils import timezone
 from datetime import datetime, timedelta
 
 
@@ -134,6 +135,7 @@ def get_sample_f1_schedule():
     """
     Return F1 2025 race schedule
     Based on provisional 2025 calendar
+    All datetimes are timezone-aware (UTC)
     """
     races = [
         {'name': 'Bahrain Grand Prix', 'location': 'Bahrain International Circuit', 'country': 'Bahrain', 'date': datetime(2025, 3, 16, 15, 0)},
@@ -164,7 +166,8 @@ def get_sample_f1_schedule():
 
     schedule = []
     for i, race in enumerate(races):
-        race_date = race['date']
+        # Convert naive datetime to timezone-aware datetime (UTC)
+        race_date = timezone.make_aware(race['date'])
         deadline = race_date - timedelta(hours=2)
 
         schedule.append({
