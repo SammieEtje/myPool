@@ -258,7 +258,7 @@ class ScoreRaceCommandTest(TestCase):
 
         # Score the race
         out = StringIO()
-        call_command('score_race', f'--race-id={self.race.id}', stdout=out)
+        call_command('score_race', str(self.race.id), stdout=out)
 
         # Check bets scored correctly
         bet1 = Bet.objects.get(driver=self.drivers[0], race=self.race)
@@ -282,7 +282,7 @@ class ScoreRaceCommandTest(TestCase):
 
         # Score the race
         out = StringIO()
-        call_command('score_race', f'--race-id={self.race.id}', stdout=out)
+        call_command('score_race', str(self.race.id), stdout=out)
 
         # Check partial points awarded
         bet = Bet.objects.get(driver=self.drivers[4], race=self.race)
@@ -302,7 +302,7 @@ class ScoreRaceCommandTest(TestCase):
 
         # Score the race
         out = StringIO()
-        call_command('score_race', f'--race-id={self.race.id}', stdout=out)
+        call_command('score_race', str(self.race.id), stdout=out)
 
         # Check standing created/updated
         standing = CompetitionStanding.objects.filter(
@@ -314,8 +314,8 @@ class ScoreRaceCommandTest(TestCase):
         self.assertEqual(standing.total_points, 10)
         self.assertEqual(standing.exact_predictions, 1)
 
-    def test_score_race_by_name(self):
-        """Test scoring race by name"""
+    def test_score_race_by_id(self):
+        """Test scoring race by ID"""
         # Create bet
         Bet.objects.create(
             user=self.user,
@@ -325,9 +325,9 @@ class ScoreRaceCommandTest(TestCase):
             predicted_position=1
         )
 
-        # Score by race name
+        # Score by race ID
         out = StringIO()
-        call_command('score_race', '--race-name=Test GP', stdout=out)
+        call_command('score_race', str(self.race.id), stdout=out)
 
         # Check bet scored
         bet = Bet.objects.get(race=self.race, user=self.user)
@@ -348,7 +348,7 @@ class ScoreRaceCommandTest(TestCase):
 
         # Try to score again
         out = StringIO()
-        call_command('score_race', f'--race-id={self.race.id}', stdout=out)
+        call_command('score_race', str(self.race.id), stdout=out)
 
         # Check bet not re-scored
         bet.refresh_from_db()
