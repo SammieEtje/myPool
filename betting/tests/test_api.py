@@ -173,9 +173,20 @@ class BetTypeAPITest(TestCase):
             is_active=False
         )
         response = self.client.get('/api/bet-types/')
-        self.assertGreaterEqual(len(response.data), 1)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Handle both paginated and non-paginated responses
+        data = response.data
+        if isinstance(data, dict) and 'results' in data:
+            # Paginated response
+            bet_types = data['results']
+        else:
+            # Non-paginated response (list)
+            bet_types = data
+
+        self.assertGreaterEqual(len(bet_types), 1)
         # Verify inactive bet type is not in results
-        codes = [bt['code'] for bt in response.data]
+        codes = [bt['code'] for bt in bet_types]
         self.assertNotIn('inactive', codes)
         self.assertIn('top10', codes)
 
@@ -420,5 +431,15 @@ class CompetitionStandingAPITest(TestCase):
         )
 
         response = self.client.get('/api/standings/')
-        self.assertEqual(response.data[0]['rank'], 1)
-        self.assertEqual(response.data[1]['rank'], 2)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Handle both paginated and non-paginated responses
+        data = response.data
+        if isinstance(data, dict) and 'results' in data:
+            standings = data['results']
+        else:
+            standings = data
+
+        self.assertGreaterEqual(len(standings), 2)
+        self.assertEqual(standings[0]['rank'], 1)
+        self.assertEqual(standings[1]['rank'], 2)
