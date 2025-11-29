@@ -1,14 +1,13 @@
 """
 Test suite for F1 Betting Pool models
 """
-from django.test import TestCase
-from django.contrib.auth.models import User
-from django.utils import timezone
 from datetime import timedelta
-from betting.models import (
-    UserProfile, Competition, Driver, Race, BetType,
-    Bet, RaceResult, CompetitionStanding
-)
+
+from django.contrib.auth.models import User
+from django.test import TestCase
+from django.utils import timezone
+
+from betting.models import Bet, BetType, Competition, CompetitionStanding, Driver, Race, RaceResult, UserProfile
 
 
 class UserProfileModelTest(TestCase):

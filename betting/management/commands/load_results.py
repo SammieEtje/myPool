@@ -1,8 +1,18 @@
-from django.core.management.base import BaseCommand
-from django.contrib.auth.models import User
-from betting.models import Competition, Race, Driver, RaceResult, Bet, CompetitionStanding, BetType
-from django.utils import timezone
 import random
+
+from django.contrib.auth.models import User
+from django.core.management.base import BaseCommand
+from django.utils import timezone
+
+from betting.models import (
+    Bet,
+    BetType,
+    Competition,
+    CompetitionStanding,
+    Driver,
+    Race,
+    RaceResult,
+)
 
 
 class Command(BaseCommand):

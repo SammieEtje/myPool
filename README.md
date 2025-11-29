@@ -2,9 +2,14 @@
 
 A modern, responsive web application for Formula 1 betting pools among friends. Built with Django, Django REST Framework, and vanilla JavaScript.
 
-![Racing Theme](https://img.shields.io/badge/Racing-F1-DC0000?style=for-the-badge)
-![Django](https://img.shields.io/badge/Django-5.0-092E20?style=for-the-badge&logo=django)
-![Python](https://img.shields.io/badge/Python-3.11-3776AB?style=for-the-badge&logo=python)
+## Build Status
+
+[![CI/CD Pipeline](https://github.com/SammieEtje/myPool/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/SammieEtje/myPool/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/SammieEtje/myPool/branch/main/graph/badge.svg)](https://codecov.io/gh/SammieEtje/myPool)
+[![Python 3.11 | 3.12 | 3.14](https://img.shields.io/badge/Python-3.11%20%7C%203.12%20%7C%203.14-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![Django 5.1](https://img.shields.io/badge/Django-5.1-092E20?logo=django&logoColor=white)](https://www.djangoproject.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![F1](https://img.shields.io/badge/Racing-F1-DC0000)](https://www.formula1.com/)
 
 ## Features
 
@@ -395,6 +400,29 @@ python manage.py seed_data
 
 ### Authentication issues
 Clear browser cookies and cache, then try logging in again.
+
+## CI/CD Pipeline
+
+This project uses GitHub Actions for continuous integration and deployment. The pipeline includes:
+
+### Workflow Jobs
+- **Test Suite** - Runs unit and integration tests on Python 3.11, 3.12, and 3.14
+- **Code Quality** - Linting with flake8, formatting with black, import sorting with isort
+- **Security Scan** - Vulnerability scanning with safety and bandit
+- **Build Check** - Validates deployment readiness and static file collection
+- **Integration Tests** - End-to-end workflow testing with seed data and race scoring
+- **Performance Tests** - Database query performance analysis
+
+### Status Badges
+The badges at the top of this README show:
+- **CI/CD Pipeline** - Overall workflow status (click to view details)
+- **Code Coverage** - Test coverage percentage from Codecov
+- **Python Versions** - Supported Python versions (3.11, 3.12, 3.14)
+- **Django Version** - Current Django framework version
+- **License** - Project license (MIT)
+- **F1 Racing** - Theme indicator
+
+All tests must pass before merging to main branch.
 
 ## Contributing
 

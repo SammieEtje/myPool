@@ -1,6 +1,8 @@
+from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand
 from django.db.models import F, Sum
-from betting.models import Race, Bet, RaceResult, CompetitionStanding, Competition
+
+from betting.models import Bet, Competition, CompetitionStanding, Race, RaceResult
 
 
 class Command(BaseCommand):
@@ -107,7 +109,6 @@ class Command(BaseCommand):
             race__competition=competition
         ).values_list('user', flat=True).distinct()
 
-        from django.contrib.auth.models import User
         participants = User.objects.filter(id__in=users_with_bets)
 
         for user in participants:

@@ -1,19 +1,22 @@
-from django.shortcuts import render
-from rest_framework import viewsets, status, permissions
+from django.db.models import Q
+from django.shortcuts import get_object_or_404, render
+from django.utils import timezone
+from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from django.shortcuts import get_object_or_404
-from django.db.models import Q
-from django.utils import timezone
 
-from .models import (
-    UserProfile, Competition, Driver, Race, BetType,
-    Bet, RaceResult, CompetitionStanding
-)
+from .models import Bet, BetType, Competition, CompetitionStanding, Driver, Race, RaceResult, UserProfile
 from .serializers import (
-    UserProfileSerializer, CompetitionSerializer, DriverSerializer,
-    RaceSerializer, RaceDetailSerializer, BetTypeSerializer, BetSerializer,
-    BetCreateSerializer, RaceResultSerializer, CompetitionStandingSerializer
+    BetCreateSerializer,
+    BetSerializer,
+    BetTypeSerializer,
+    CompetitionSerializer,
+    CompetitionStandingSerializer,
+    DriverSerializer,
+    RaceDetailSerializer,
+    RaceResultSerializer,
+    RaceSerializer,
+    UserProfileSerializer,
 )
 
 
