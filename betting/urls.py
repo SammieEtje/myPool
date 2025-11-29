@@ -11,6 +11,7 @@ router.register(r'bet-types', views.BetTypeViewSet, basename='bettype')
 router.register(r'bets', views.BetViewSet, basename='bet')
 router.register(r'profiles', views.UserProfileViewSet, basename='userprofile')
 router.register(r'standings', views.CompetitionStandingViewSet, basename='standing')
+router.register(r'race-results', views.RaceResultViewSet, basename='raceresult')
 
 urlpatterns = [
     path('api/', include(router.urls)),

@@ -19,11 +19,13 @@ A modern, responsive web application for Formula 1 betting pools among friends. 
 - **Responsive Design** - Mobile-first, racing-inspired UI with dark theme
 
 ### Admin Features
-- Comprehensive Django admin panel for managing all aspects
-- Create competitions, add races, manage drivers
-- Enter race results manually or via API integration
-- Score races and update standings with management commands
-- View user statistics and betting history
+- **Statistics Dashboard** - Real-time overview of users, races, bets, and more on admin homepage
+- **Competition Management** - Create and manage F1 seasons/championships
+- **Race Management** - Add races, set betting deadlines, manage race results
+- **Driver Management** - Track current and historical F1 drivers
+- **User Management** - Manage users, permissions, and profiles
+- **Scoring System** - Automated race scoring with management commands
+- **Detailed Tutorial** - Step-by-step [Admin Tutorial](ADMIN_TUTORIAL.md) for all tasks
 
 ### Technical Features
 - RESTful API with Django REST Framework
@@ -93,6 +95,22 @@ python manage.py runserver
 - Admin Panel: http://localhost:8000/admin
 - API: http://localhost:8000/api/
 
+## Documentation
+
+### For Administrators
+📚 **[Admin Tutorial](ADMIN_TUTORIAL.md)** - Comprehensive step-by-step guide for managing the F1 betting pool:
+- Setting up competitions and races
+- Managing drivers and users
+- Loading race results
+- Scoring races and viewing standings
+- Troubleshooting common issues
+- Best practices for running a season
+
+### For Developers
+- **[Quick Start Guide](QUICKSTART.md)** - Fast setup instructions for development
+- **[Testing Guide](TESTING.md)** - Comprehensive testing documentation and CI/CD information
+- **README.md** (this file) - Project overview and technical documentation
+
 ## Project Structure
 
 ```
@@ -105,14 +123,17 @@ myPool/
 │   ├── models.py          # Database models
 │   ├── views.py           # API views
 │   ├── serializers.py     # DRF serializers
-│   ├── admin.py           # Admin configuration
+│   ├── admin.py           # Admin configuration with statistics dashboard
 │   ├── signals.py         # User profile signals
 │   ├── f1_api.py          # F1 API integration
 │   └── management/        # Management commands
 │       └── commands/
-│           ├── seed_data.py    # Database seeding
-│           └── score_race.py   # Bet scoring
+│           ├── seed_data.py      # Database seeding
+│           ├── load_results.py   # Load race results
+│           └── score_race.py     # Bet scoring
 ├── templates/             # HTML templates
+│   ├── account/           # Authentication pages
+│   ├── admin/             # Admin customizations
 │   └── index.html         # SPA main template
 ├── static/                # Static assets
 │   ├── css/
@@ -124,7 +145,9 @@ myPool/
 ├── .env.example          # Environment variables template
 ├── azure-deploy.yml      # Azure deployment config
 ├── startup.sh            # Azure startup script
-└── README.md             # This file
+├── README.md             # This file
+├── ADMIN_TUTORIAL.md     # Step-by-step admin guide
+└── QUICKSTART.md         # Quick setup guide
 ```
 
 ## Database Models
@@ -174,17 +197,25 @@ python manage.py seed_data [--clear]
 ```
 Populates the database with sample F1 data for testing.
 
+### Load Race Results
+```bash
+python manage.py load_results --races 3
+```
+Loads sample race results for demonstration and testing purposes.
+
 ### Score Race
 ```bash
-python manage.py score_race <race_id>
+python manage.py score_race 1
 ```
-Calculates points for all bets in a race and updates standings.
+Calculates points for all bets in a race and updates standings. Requires the race ID as an argument.
 
-Example workflow:
+**Example workflow:**
 1. Race finishes
-2. Admin enters results in Django admin
-3. Run `python manage.py score_race 1`
+2. Admin enters results in Django admin (or uses `load_results` command)
+3. Run `python manage.py score_race 1` (where 1 is the race ID)
 4. Standings automatically update
+
+📚 **For detailed instructions, see the [Admin Tutorial](ADMIN_TUTORIAL.md)**
 
 ## Scoring System
 
@@ -279,14 +310,54 @@ Reusable components are defined in `/static/css/design-system.css`:
 ## Development
 
 ### Running Tests
+
+Run all tests:
 ```bash
 python manage.py test
 ```
 
-### Code Formatting
+Run tests with pytest (recommended):
+```bash
+pytest
+```
+
+Run tests with coverage:
+```bash
+pytest --cov=betting --cov-report=html
+```
+
+📚 **For detailed testing information, see [TESTING.md](TESTING.md)**
+
+### Continuous Integration
+
+The project uses GitHub Actions for automated testing:
+- ✅ Test suite on Python 3.11 & 3.12
+- ✅ Code quality checks (flake8, black, isort)
+- ✅ Security scanning (safety, bandit)
+- ✅ Integration tests
+- ✅ Performance tests
+- ✅ Code coverage reports
+
+### Code Quality
+
+Format code:
 ```bash
 black .
+```
+
+Lint code:
+```bash
 flake8 .
+```
+
+Sort imports:
+```bash
+isort .
+```
+
+Run all quality checks:
+```bash
+flake8 . && black --check . && isort --check-only .
 ```
 
 ### Database Migrations
@@ -298,6 +369,13 @@ python manage.py migrate
 ### Creating Superuser
 ```bash
 python manage.py createsuperuser
+```
+
+### Development Dependencies
+
+Install all development and testing dependencies:
+```bash
+pip install -r requirements-dev.txt
 ```
 
 ## Troubleshooting
