@@ -76,7 +76,7 @@ class BetSerializer(serializers.ModelSerializer):
         fields = ['id', 'user', 'user_email', 'race', 'race_name', 'bet_type',
                   'bet_type_name', 'driver', 'driver_name', 'predicted_position',
                   'points_earned', 'is_scored', 'created_at']
-        read_only_fields = ['points_earned', 'is_scored']
+        read_only_fields = ['user', 'user_email', 'points_earned', 'is_scored', 'created_at']
 
     def get_driver_name(self, obj):
         return f"{obj.driver.first_name} {obj.driver.last_name}"
