@@ -1,9 +1,7 @@
-from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import (
-    UserProfile, Competition, Driver, Race, BetType,
-    Bet, RaceResult, CompetitionStanding
-)
+from rest_framework import serializers
+
+from .models import Bet, BetType, Competition, CompetitionStanding, Driver, Race, RaceResult, UserProfile
 
 
 class UserProfileSerializer(serializers.ModelSerializer):

@@ -1,15 +1,15 @@
 """
 Test suite for F1 Betting Pool management commands
 """
-from django.test import TestCase
-from django.core.management import call_command
-from django.contrib.auth.models import User
-from django.utils import timezone
 from datetime import timedelta
 from io import StringIO
-from betting.models import (
-    Competition, Driver, Race, BetType, Bet, RaceResult, CompetitionStanding
-)
+
+from django.contrib.auth.models import User
+from django.core.management import call_command
+from django.test import TestCase
+from django.utils import timezone
+
+from betting.models import Bet, BetType, Competition, CompetitionStanding, Driver, Race, RaceResult
 
 
 class SeedDataCommandTest(TestCase):

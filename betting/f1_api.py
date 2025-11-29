@@ -4,10 +4,11 @@ Uses OpenF1 API for race data and driver information
 Fallback to manual entry if API is unavailable
 """
 
+from datetime import datetime, timedelta
+
 import requests
 from django.conf import settings
 from django.utils import timezone
-from datetime import datetime, timedelta
 
 
 class F1API:

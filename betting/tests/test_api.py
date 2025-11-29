@@ -1,15 +1,15 @@
 """
 Test suite for F1 Betting Pool API endpoints
 """
-from django.test import TestCase
-from django.contrib.auth.models import User
-from django.utils import timezone
 from datetime import timedelta
-from rest_framework.test import APIClient
+
+from django.contrib.auth.models import User
+from django.test import TestCase
+from django.utils import timezone
 from rest_framework import status
-from betting.models import (
-    Competition, Driver, Race, BetType, Bet, RaceResult, CompetitionStanding
-)
+from rest_framework.test import APIClient
+
+from betting.models import Bet, BetType, Competition, CompetitionStanding, Driver, Race, RaceResult
 
 
 class CompetitionAPITest(TestCase):
