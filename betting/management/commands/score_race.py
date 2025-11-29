@@ -102,8 +102,13 @@ class Command(BaseCommand):
         """Update competition standings based on scored bets"""
         self.stdout.write('\nUpdating competition standings...')
 
-        # Get all participants
-        participants = competition.participants.all()
+        # Get all users who have placed bets in this competition
+        users_with_bets = Bet.objects.filter(
+            race__competition=competition
+        ).values_list('user', flat=True).distinct()
+
+        from django.contrib.auth.models import User
+        participants = User.objects.filter(id__in=users_with_bets)
 
         for user in participants:
             # Calculate total points for this user in this competition
