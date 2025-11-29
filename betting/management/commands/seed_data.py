@@ -1,8 +1,10 @@
-from django.core.management.base import BaseCommand
+from datetime import date, datetime
+
 from django.contrib.auth.models import User
-from betting.models import Driver, BetType, Competition, Race
+from django.core.management.base import BaseCommand
+
 from betting.f1_api import get_sample_f1_drivers, get_sample_f1_schedule
-from datetime import datetime, date
+from betting.models import BetType, Competition, Driver, Race
 
 
 class Command(BaseCommand):
