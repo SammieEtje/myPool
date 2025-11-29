@@ -201,7 +201,7 @@ jobs:
 
     - name: Score race
       run: |
-        python manage.py score_race --race-id 1
+        python manage.py score_race 1
 
     - name: Verify data integrity
       run: |

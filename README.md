@@ -205,15 +205,14 @@ Loads sample race results for demonstration and testing purposes.
 
 ### Score Race
 ```bash
-python manage.py score_race --race-name "Bahrain Grand Prix"
-python manage.py score_race --race-id 1
+python manage.py score_race 1
 ```
-Calculates points for all bets in a race and updates standings.
+Calculates points for all bets in a race and updates standings. Requires the race ID as an argument.
 
 **Example workflow:**
 1. Race finishes
 2. Admin enters results in Django admin (or uses `load_results` command)
-3. Run `python manage.py score_race --race-id 1`
+3. Run `python manage.py score_race 1` (where 1 is the race ID)
 4. Standings automatically update
 
 📚 **For detailed instructions, see the [Admin Tutorial](ADMIN_TUTORIAL.md)**

@@ -401,10 +401,7 @@ After loading race results, you need to score all the bets to calculate points.
 
 ```bash
 # Score a specific race by its database ID
-python manage.py score_race --race-id 1
-
-# Score the Bahrain Grand Prix
-python manage.py score_race --race-name "Bahrain Grand Prix"
+python manage.py score_race 1
 ```
 
 The command will:
@@ -657,9 +654,8 @@ python manage.py seed_data
 # Load sample race results (for first N races)
 python manage.py load_results --races 3
 
-# Score a specific race
-python manage.py score_race --race-name "Bahrain Grand Prix"
-python manage.py score_race --race-id 1
+# Score a specific race (by race ID)
+python manage.py score_race 1
 
 # Backup database
 python manage.py dumpdata > backup.json
