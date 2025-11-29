@@ -261,3 +261,20 @@ class CompetitionStandingViewSet(viewsets.ReadOnlyModelViewSet):
             queryset = queryset.filter(competition_id=competition_id)
 
         return queryset.order_by('rank')
+
+
+class RaceResultViewSet(viewsets.ReadOnlyModelViewSet):
+    """API endpoint for race results"""
+    queryset = RaceResult.objects.filter(verified=True)
+    serializer_class = RaceResultSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def get_queryset(self):
+        queryset = RaceResult.objects.filter(verified=True)
+
+        # Filter by race
+        race_id = self.request.query_params.get('race', None)
+        if race_id:
+            queryset = queryset.filter(race_id=race_id)
+
+        return queryset.order_by('race__race_datetime', 'position')
