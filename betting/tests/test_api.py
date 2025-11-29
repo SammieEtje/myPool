@@ -41,7 +41,15 @@ class CompetitionAPITest(TestCase):
         """Test listing competitions"""
         response = self.client.get('/api/competitions/')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertGreaterEqual(len(response.data), 1)
+
+        # Handle both paginated and non-paginated responses
+        data = response.data
+        if isinstance(data, dict) and 'results' in data:
+            competitions = data['results']
+        else:
+            competitions = data
+
+        self.assertGreaterEqual(len(competitions), 1)
 
     def test_get_competition_detail(self):
         """Test getting competition detail"""
@@ -79,7 +87,15 @@ class DriverAPITest(TestCase):
         """Test listing drivers"""
         response = self.client.get('/api/drivers/')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertGreaterEqual(len(response.data), 1)
+
+        # Handle both paginated and non-paginated responses
+        data = response.data
+        if isinstance(data, dict) and 'results' in data:
+            drivers = data['results']
+        else:
+            drivers = data
+
+        self.assertGreaterEqual(len(drivers), 1)
 
     def test_get_driver_detail(self):
         """Test getting driver detail"""
@@ -125,7 +141,15 @@ class RaceAPITest(TestCase):
         """Test listing races"""
         response = self.client.get('/api/races/')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertGreaterEqual(len(response.data), 1)
+
+        # Handle both paginated and non-paginated responses
+        data = response.data
+        if isinstance(data, dict) and 'results' in data:
+            races = data['results']
+        else:
+            races = data
+
+        self.assertGreaterEqual(len(races), 1)
 
     def test_get_race_detail(self):
         """Test getting race detail"""
@@ -137,13 +161,29 @@ class RaceAPITest(TestCase):
         """Test filtering races by competition"""
         response = self.client.get(f'/api/races/?competition={self.competition.id}')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
+
+        # Handle both paginated and non-paginated responses
+        data = response.data
+        if isinstance(data, dict) and 'results' in data:
+            races = data['results']
+        else:
+            races = data
+
+        self.assertEqual(len(races), 1)
 
     def test_filter_upcoming_races(self):
         """Test filtering upcoming races"""
         response = self.client.get('/api/races/?upcoming=true')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertGreaterEqual(len(response.data), 1)
+
+        # Handle both paginated and non-paginated responses
+        data = response.data
+        if isinstance(data, dict) and 'results' in data:
+            races = data['results']
+        else:
+            races = data
+
+        self.assertGreaterEqual(len(races), 1)
 
 
 class BetTypeAPITest(TestCase):
@@ -163,7 +203,15 @@ class BetTypeAPITest(TestCase):
         """Test listing bet types"""
         response = self.client.get('/api/bet-types/')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertGreaterEqual(len(response.data), 1)
+
+        # Handle both paginated and non-paginated responses
+        data = response.data
+        if isinstance(data, dict) and 'results' in data:
+            bet_types = data['results']
+        else:
+            bet_types = data
+
+        self.assertGreaterEqual(len(bet_types), 1)
 
     def test_only_active_bet_types_shown(self):
         """Test only active bet types are shown"""
@@ -289,7 +337,15 @@ class BetAPITest(TestCase):
 
         response = self.client.get('/api/bets/my_bets/')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
+
+        # Handle both paginated and non-paginated responses
+        data = response.data
+        if isinstance(data, dict) and 'results' in data:
+            bets = data['results']
+        else:
+            bets = data
+
+        self.assertEqual(len(bets), 1)
 
     def test_bulk_create_bets(self):
         """Test bulk creating bets for top 10"""
@@ -366,7 +422,15 @@ class RaceResultAPITest(TestCase):
         """Test listing race results"""
         response = self.client.get('/api/race-results/')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertGreaterEqual(len(response.data), 1)
+
+        # Handle both paginated and non-paginated responses
+        data = response.data
+        if isinstance(data, dict) and 'results' in data:
+            results = data['results']
+        else:
+            results = data
+
+        self.assertGreaterEqual(len(results), 1)
 
     def test_get_results_for_race(self):
         """Test getting results for specific race"""
@@ -408,13 +472,29 @@ class CompetitionStandingAPITest(TestCase):
         """Test listing competition standings"""
         response = self.client.get('/api/standings/')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertGreaterEqual(len(response.data), 1)
+
+        # Handle both paginated and non-paginated responses
+        data = response.data
+        if isinstance(data, dict) and 'results' in data:
+            standings = data['results']
+        else:
+            standings = data
+
+        self.assertGreaterEqual(len(standings), 1)
 
     def test_filter_standings_by_competition(self):
         """Test filtering standings by competition"""
         response = self.client.get(f'/api/standings/?competition={self.competition.id}')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertGreaterEqual(len(response.data), 1)
+
+        # Handle both paginated and non-paginated responses
+        data = response.data
+        if isinstance(data, dict) and 'results' in data:
+            standings = data['results']
+        else:
+            standings = data
+
+        self.assertGreaterEqual(len(standings), 1)
 
     def test_standings_ordered_by_rank(self):
         """Test standings are ordered by rank"""
