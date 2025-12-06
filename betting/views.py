@@ -30,7 +30,15 @@ class IsAuthenticatedOrReadOnly(permissions.BasePermission):
 
 class CompetitionViewSet(viewsets.ReadOnlyModelViewSet):
     """API endpoint for competitions"""
-    queryset = Competition.objects.filter(status__in=['published', 'active', 'completed'])
+    queryset = Competition.objects.filter(
+        status__in=['published', 'active', 'completed']
+    ).select_related(
+        'created_by',
+        'created_by__profile'
+    ).prefetch_related(
+        'participants',
+        'races'
+    )
     serializer_class = CompetitionSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
 
@@ -38,7 +46,12 @@ class CompetitionViewSet(viewsets.ReadOnlyModelViewSet):
     def standings(self, request, pk=None):
         """Get standings/leaderboard for a competition"""
         competition = self.get_object()
-        standings = CompetitionStanding.objects.filter(competition=competition).order_by('rank')
+        standings = CompetitionStanding.objects.filter(
+            competition=competition
+        ).select_related(
+            'user',
+            'user__profile'
+        ).order_by('rank')
         serializer = CompetitionStandingSerializer(standings, many=True)
         return Response(serializer.data)
 
@@ -46,7 +59,7 @@ class CompetitionViewSet(viewsets.ReadOnlyModelViewSet):
     def races(self, request, pk=None):
         """Get all races for a competition"""
         competition = self.get_object()
-        races = competition.races.all()
+        races = competition.races.select_related('competition').all()
         serializer = RaceSerializer(races, many=True)
         return Response(serializer.data)
 
@@ -89,7 +102,7 @@ class CompetitionViewSet(viewsets.ReadOnlyModelViewSet):
 
 class RaceViewSet(viewsets.ReadOnlyModelViewSet):
     """API endpoint for races"""
-    queryset = Race.objects.all()
+    queryset = Race.objects.select_related('competition').all()
     permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get_serializer_class(self):
@@ -98,7 +111,15 @@ class RaceViewSet(viewsets.ReadOnlyModelViewSet):
         return RaceSerializer
 
     def get_queryset(self):
-        queryset = Race.objects.all()
+        queryset = Race.objects.select_related(
+            'competition',
+            'competition__created_by',
+            'competition__created_by__profile'
+        ).prefetch_related(
+            'results__driver',
+            'bets__driver',
+            'bets__bet_type'
+        )
 
         # Filter by competition
         competition_id = self.request.query_params.get('competition', None)
@@ -121,7 +142,10 @@ class RaceViewSet(viewsets.ReadOnlyModelViewSet):
     def results(self, request, pk=None):
         """Get results for a race"""
         race = self.get_object()
-        results = race.results.filter(verified=True).order_by('position')
+        results = race.results.select_related(
+            'driver',
+            'race'
+        ).filter(verified=True).order_by('position')
         serializer = RaceResultSerializer(results, many=True)
         return Response(serializer.data)
 
@@ -135,7 +159,11 @@ class RaceViewSet(viewsets.ReadOnlyModelViewSet):
             )
 
         race = self.get_object()
-        bets = Bet.objects.filter(user=request.user, race=race)
+        bets = Bet.objects.select_related(
+            'driver',
+            'bet_type',
+            'race'
+        ).filter(user=request.user, race=race)
         serializer = BetSerializer(bets, many=True)
         return Response(serializer.data)
 
@@ -161,7 +189,12 @@ class BetViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         """Users can only see their own bets"""
-        return Bet.objects.filter(user=self.request.user)
+        return Bet.objects.select_related(
+            'race',
+            'race__competition',
+            'driver',
+            'bet_type'
+        ).filter(user=self.request.user)
 
     def perform_create(self, serializer):
         """Automatically set the user when creating a bet"""
@@ -239,7 +272,7 @@ class UserProfileViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        return UserProfile.objects.all()
+        return UserProfile.objects.select_related('user').all()
 
     @action(detail=False, methods=['get'])
     def me(self, request):
@@ -251,12 +284,20 @@ class UserProfileViewSet(viewsets.ReadOnlyModelViewSet):
 
 class CompetitionStandingViewSet(viewsets.ReadOnlyModelViewSet):
     """API endpoint for competition standings"""
-    queryset = CompetitionStanding.objects.all()
+    queryset = CompetitionStanding.objects.select_related(
+        'competition',
+        'user',
+        'user__profile'
+    ).all()
     serializer_class = CompetitionStandingSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get_queryset(self):
-        queryset = CompetitionStanding.objects.all()
+        queryset = CompetitionStanding.objects.select_related(
+            'competition',
+            'user',
+            'user__profile'
+        )
 
         # Filter by competition
         competition_id = self.request.query_params.get('competition', None)
@@ -268,12 +309,20 @@ class CompetitionStandingViewSet(viewsets.ReadOnlyModelViewSet):
 
 class RaceResultViewSet(viewsets.ReadOnlyModelViewSet):
     """API endpoint for race results"""
-    queryset = RaceResult.objects.filter(verified=True)
+    queryset = RaceResult.objects.select_related(
+        'race',
+        'race__competition',
+        'driver'
+    ).filter(verified=True)
     serializer_class = RaceResultSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get_queryset(self):
-        queryset = RaceResult.objects.filter(verified=True)
+        queryset = RaceResult.objects.select_related(
+            'race',
+            'race__competition',
+            'driver'
+        ).filter(verified=True)
 
         # Filter by race
         race_id = self.request.query_params.get('race', None)
