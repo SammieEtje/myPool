@@ -25,13 +25,10 @@ from betting.admin import admin_site
 urlpatterns = [
     # Admin
     path("admin/", admin_site.urls),
-
     # Authentication (AllAuth)
     path("accounts/", include("allauth.urls")),
-
     # API
     path("", include("betting.urls")),
-
     # Frontend SPA (catch-all for client-side routing)
     path("", TemplateView.as_view(template_name="index.html"), name="home"),
 ]

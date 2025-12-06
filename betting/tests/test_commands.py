@@ -1,6 +1,7 @@
 """
 Test suite for F1 Betting Pool management commands
 """
+
 from datetime import timedelta
 from io import StringIO
 
@@ -18,35 +19,35 @@ class SeedDataCommandTest(TestCase):
     def test_seed_data_creates_users(self):
         """Test seed_data creates users"""
         out = StringIO()
-        call_command('seed_data', stdout=out)
+        call_command("seed_data", stdout=out)
 
         # Check admin user created
-        admin = User.objects.filter(email='admin@f1betting.com').first()
+        admin = User.objects.filter(email="admin@f1betting.com").first()
         self.assertIsNotNone(admin)
         self.assertTrue(admin.is_superuser)
 
         # Check test users created
-        test_users = User.objects.filter(email__startswith='user')
+        test_users = User.objects.filter(email__startswith="user")
         self.assertGreaterEqual(test_users.count(), 5)
 
     def test_seed_data_creates_drivers(self):
         """Test seed_data creates drivers"""
         out = StringIO()
-        call_command('seed_data', stdout=out)
+        call_command("seed_data", stdout=out)
 
         drivers = Driver.objects.all()
         self.assertGreaterEqual(drivers.count(), 20)
 
         # Check specific drivers exist
-        hamilton = Driver.objects.filter(last_name='Hamilton').first()
-        verstappen = Driver.objects.filter(last_name='Verstappen').first()
+        hamilton = Driver.objects.filter(last_name="Hamilton").first()
+        verstappen = Driver.objects.filter(last_name="Verstappen").first()
         self.assertIsNotNone(hamilton)
         self.assertIsNotNone(verstappen)
 
     def test_seed_data_creates_competition(self):
         """Test seed_data creates competition"""
         out = StringIO()
-        call_command('seed_data', stdout=out)
+        call_command("seed_data", stdout=out)
 
         competitions = Competition.objects.all()
         self.assertGreaterEqual(competitions.count(), 1)
@@ -60,7 +61,7 @@ class SeedDataCommandTest(TestCase):
     def test_seed_data_creates_races(self):
         """Test seed_data creates races"""
         out = StringIO()
-        call_command('seed_data', stdout=out)
+        call_command("seed_data", stdout=out)
 
         races = Race.objects.all()
         self.assertGreaterEqual(races.count(), 20)
@@ -72,13 +73,13 @@ class SeedDataCommandTest(TestCase):
     def test_seed_data_creates_bet_types(self):
         """Test seed_data creates bet types"""
         out = StringIO()
-        call_command('seed_data', stdout=out)
+        call_command("seed_data", stdout=out)
 
         bet_types = BetType.objects.all()
         self.assertGreaterEqual(bet_types.count(), 1)
 
         # Check top10 bet type exists
-        top10 = BetType.objects.filter(code='top10').first()
+        top10 = BetType.objects.filter(code="top10").first()
         self.assertIsNotNone(top10)
         self.assertTrue(top10.is_active)
         self.assertEqual(top10.max_selections, 10)
@@ -86,11 +87,10 @@ class SeedDataCommandTest(TestCase):
     def test_seed_data_clear_option(self):
         """Test seed_data --clear option"""
         # First seed
-        call_command('seed_data', stdout=StringIO())
-        first_count = User.objects.count()
+        call_command("seed_data", stdout=StringIO())
 
         # Seed again with clear
-        call_command('seed_data', '--clear', stdout=StringIO())
+        call_command("seed_data", "--clear", stdout=StringIO())
         second_count = User.objects.count()
 
         # Should have similar count (cleared and re-seeded)
@@ -102,58 +102,48 @@ class LoadResultsCommandTest(TestCase):
 
     def setUp(self):
         # Create necessary data
-        admin = User.objects.create_user(
-            username='admin',
-            email='admin@example.com',
-            password='admin123',
-            is_superuser=True
-        )
+        admin = User.objects.create_user(username="admin", email="admin@example.com", password="admin123", is_superuser=True)
         self.competition = Competition.objects.create(
-            name='F1 2025',
+            name="F1 2025",
             year=2025,
-            status='active',
+            status="active",
             start_date=timezone.now().date(),
             end_date=timezone.now().date() + timedelta(days=300),
-            created_by=admin
+            created_by=admin,
         )
 
         # Create drivers
         for i in range(1, 21):
-            Driver.objects.create(
-                driver_number=i,
-                first_name=f'Driver{i}',
-                last_name='Test',
-                team='Team'
-            )
+            Driver.objects.create(driver_number=i, first_name=f"Driver{i}", last_name="Test", team="Team")
 
         # Create races
         for i in range(1, 6):
             Race.objects.create(
                 competition=self.competition,
-                name=f'Race {i}',
+                name=f"Race {i}",
                 round_number=i,
-                race_datetime=timezone.now() - timedelta(days=30-i*7),
-                betting_deadline=timezone.now() - timedelta(days=30-i*7),
-                status='scheduled'
+                race_datetime=timezone.now() - timedelta(days=30 - i * 7),
+                betting_deadline=timezone.now() - timedelta(days=30 - i * 7),
+                status="scheduled",
             )
 
     def test_load_results_creates_results(self):
         """Test load_results creates race results"""
         out = StringIO()
-        call_command('load_results', '--races=2', stdout=out)
+        call_command("load_results", "--races=2", stdout=out)
 
         # Check results were created
         results = RaceResult.objects.all()
         self.assertGreaterEqual(results.count(), 10)  # At least 10 results
 
         # Check races marked as completed
-        completed_races = Race.objects.filter(status='completed')
+        completed_races = Race.objects.filter(status="completed")
         self.assertGreaterEqual(completed_races.count(), 2)
 
     def test_load_results_verifies_results(self):
         """Test load_results marks results as verified"""
         out = StringIO()
-        call_command('load_results', '--races=1', stdout=out)
+        call_command("load_results", "--races=1", stdout=out)
 
         results = RaceResult.objects.all()
         for result in results:
@@ -162,10 +152,10 @@ class LoadResultsCommandTest(TestCase):
     def test_load_results_default_count(self):
         """Test load_results with default race count"""
         out = StringIO()
-        call_command('load_results', stdout=out)
+        call_command("load_results", stdout=out)
 
         # Default is 3 races
-        completed_races = Race.objects.filter(status='completed')
+        completed_races = Race.objects.filter(status="completed")
         self.assertGreaterEqual(completed_races.count(), 3)
 
 
@@ -175,90 +165,60 @@ class ScoreRaceCommandTest(TestCase):
     def setUp(self):
         # Create admin
         self.admin = User.objects.create_user(
-            username='admin',
-            email='admin@example.com',
-            password='admin123',
-            is_superuser=True
+            username="admin", email="admin@example.com", password="admin123", is_superuser=True
         )
 
         # Create user
-        self.user = User.objects.create_user(
-            username='testuser',
-            email='test@example.com',
-            password='test123'
-        )
+        self.user = User.objects.create_user(username="testuser", email="test@example.com", password="test123")
 
         # Create competition
         self.competition = Competition.objects.create(
-            name='F1 2025',
+            name="F1 2025",
             year=2025,
-            status='active',
+            status="active",
             start_date=timezone.now().date(),
             end_date=timezone.now().date() + timedelta(days=300),
             created_by=self.admin,
             points_for_exact_position=10,
-            points_for_correct_driver=5
+            points_for_correct_driver=5,
         )
 
         # Create drivers
         self.drivers = []
         for i in range(1, 11):
-            driver = Driver.objects.create(
-                driver_number=i,
-                first_name=f'Driver{i}',
-                last_name='Test',
-                team='Team'
-            )
+            driver = Driver.objects.create(driver_number=i, first_name=f"Driver{i}", last_name="Test", team="Team")
             self.drivers.append(driver)
 
         # Create race
         self.race = Race.objects.create(
             competition=self.competition,
-            name='Test GP',
+            name="Test GP",
             round_number=1,
             race_datetime=timezone.now() - timedelta(days=1),
             betting_deadline=timezone.now() - timedelta(days=1),
-            status='completed'
+            status="completed",
         )
 
         # Create bet type
-        self.bet_type = BetType.objects.create(
-            name='Top 10',
-            code='top10',
-            requires_positions=True,
-            max_selections=10
-        )
+        self.bet_type = BetType.objects.create(name="Top 10", code="top10", requires_positions=True, max_selections=10)
 
         # Create race results (actual results)
         for i, driver in enumerate(self.drivers):
-            RaceResult.objects.create(
-                race=self.race,
-                driver=driver,
-                position=i+1,
-                verified=True
-            )
+            RaceResult.objects.create(race=self.race, driver=driver, position=i + 1, verified=True)
 
     def test_score_race_calculates_points(self):
         """Test score_race calculates points correctly"""
         # User predicts exact P1 and P2
         Bet.objects.create(
-            user=self.user,
-            race=self.race,
-            bet_type=self.bet_type,
-            driver=self.drivers[0],  # Actual P1
-            predicted_position=1
+            user=self.user, race=self.race, bet_type=self.bet_type, driver=self.drivers[0], predicted_position=1  # Actual P1
         )
         Bet.objects.create(
-            user=self.user,
-            race=self.race,
-            bet_type=self.bet_type,
-            driver=self.drivers[1],  # Actual P2
-            predicted_position=2
+            user=self.user, race=self.race, bet_type=self.bet_type, driver=self.drivers[1], predicted_position=2  # Actual P2
         )
 
         # Score the race
         out = StringIO()
-        call_command('score_race', str(self.race.id), stdout=out)
+        call_command("score_race", str(self.race.id), stdout=out)
 
         # Check bets scored correctly
         bet1 = Bet.objects.get(driver=self.drivers[0], race=self.race)
@@ -277,12 +237,12 @@ class ScoreRaceCommandTest(TestCase):
             race=self.race,
             bet_type=self.bet_type,
             driver=self.drivers[4],  # Actual P5
-            predicted_position=1  # Wrong position
+            predicted_position=1,  # Wrong position
         )
 
         # Score the race
         out = StringIO()
-        call_command('score_race', str(self.race.id), stdout=out)
+        call_command("score_race", str(self.race.id), stdout=out)
 
         # Check partial points awarded
         bet = Bet.objects.get(driver=self.drivers[4], race=self.race)
@@ -293,22 +253,15 @@ class ScoreRaceCommandTest(TestCase):
         """Test score_race updates competition standings"""
         # Create bets
         Bet.objects.create(
-            user=self.user,
-            race=self.race,
-            bet_type=self.bet_type,
-            driver=self.drivers[0],
-            predicted_position=1
+            user=self.user, race=self.race, bet_type=self.bet_type, driver=self.drivers[0], predicted_position=1
         )
 
         # Score the race
         out = StringIO()
-        call_command('score_race', str(self.race.id), stdout=out)
+        call_command("score_race", str(self.race.id), stdout=out)
 
         # Check standing created/updated
-        standing = CompetitionStanding.objects.filter(
-            user=self.user,
-            competition=self.competition
-        ).first()
+        standing = CompetitionStanding.objects.filter(user=self.user, competition=self.competition).first()
 
         self.assertIsNotNone(standing)
         self.assertEqual(standing.total_points, 10)
@@ -318,16 +271,12 @@ class ScoreRaceCommandTest(TestCase):
         """Test scoring race by ID"""
         # Create bet
         Bet.objects.create(
-            user=self.user,
-            race=self.race,
-            bet_type=self.bet_type,
-            driver=self.drivers[0],
-            predicted_position=1
+            user=self.user, race=self.race, bet_type=self.bet_type, driver=self.drivers[0], predicted_position=1
         )
 
         # Score by race ID
         out = StringIO()
-        call_command('score_race', str(self.race.id), stdout=out)
+        call_command("score_race", str(self.race.id), stdout=out)
 
         # Check bet scored
         bet = Bet.objects.get(race=self.race, user=self.user)
@@ -343,12 +292,12 @@ class ScoreRaceCommandTest(TestCase):
             driver=self.drivers[0],
             predicted_position=1,
             is_scored=True,
-            points_earned=10
+            points_earned=10,
         )
 
         # Try to score again
         out = StringIO()
-        call_command('score_race', str(self.race.id), stdout=out)
+        call_command("score_race", str(self.race.id), stdout=out)
 
         # Check bet not re-scored
         bet.refresh_from_db()
