@@ -11,9 +11,11 @@ pytest-cov==4.1.0
 coverage==7.3.2
 factory-boy==3.3.0
 
+pylint==3.0.2
 # Code Quality
-flake8==6.1.0
-black==23.11.0
+# Align versions with `requirements.txt` to avoid resolver conflicts
+flake8==7.0.0
+black==24.3.0
 isort==5.12.0
 pylint==3.0.2
 mypy==1.7.1
