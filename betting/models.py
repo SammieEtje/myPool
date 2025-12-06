@@ -6,9 +6,10 @@ from django.utils import timezone
 
 class UserProfile(models.Model):
     """Extended user profile with betting statistics"""
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
     display_name = models.CharField(max_length=100, blank=True)
-    avatar = models.ImageField(upload_to='avatars/', blank=True, null=True)
+    avatar = models.ImageField(upload_to="avatars/", blank=True, null=True)
     total_points = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -17,26 +18,27 @@ class UserProfile(models.Model):
         return f"{self.user.email} - {self.total_points} points"
 
     class Meta:
-        ordering = ['-total_points']
+        ordering = ["-total_points"]
 
 
 class Competition(models.Model):
     """F1 Season/Championship"""
+
     STATUS_CHOICES = [
-        ('draft', 'Draft'),
-        ('published', 'Published'),
-        ('active', 'Active'),
-        ('completed', 'Completed'),
+        ("draft", "Draft"),
+        ("published", "Published"),
+        ("active", "Active"),
+        ("completed", "Completed"),
     ]
 
     name = models.CharField(max_length=200, help_text="e.g., F1 2024 Championship")
     description = models.TextField(blank=True)
     year = models.IntegerField()
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='draft')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="draft")
     start_date = models.DateField()
     end_date = models.DateField()
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='created_competitions')
-    participants = models.ManyToManyField(User, related_name='competitions', blank=True)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name="created_competitions")
+    participants = models.ManyToManyField(User, related_name="competitions", blank=True)
 
     # Points configuration
     points_for_exact_position = models.IntegerField(default=10, help_text="Points for predicting exact position")
@@ -49,11 +51,12 @@ class Competition(models.Model):
         return f"{self.name} ({self.year})"
 
     class Meta:
-        ordering = ['-year', '-start_date']
+        ordering = ["-year", "-start_date"]
 
 
 class Driver(models.Model):
     """F1 Driver"""
+
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     driver_number = models.IntegerField(unique=True)
@@ -72,21 +75,22 @@ class Driver(models.Model):
         return f"#{self.driver_number} {self.first_name} {self.last_name} ({self.team})"
 
     class Meta:
-        ordering = ['driver_number']
+        ordering = ["driver_number"]
 
 
 class Race(models.Model):
     """Individual F1 Race"""
+
     STATUS_CHOICES = [
-        ('scheduled', 'Scheduled'),
-        ('betting_open', 'Betting Open'),
-        ('betting_closed', 'Betting Closed'),
-        ('in_progress', 'In Progress'),
-        ('completed', 'Completed'),
-        ('cancelled', 'Cancelled'),
+        ("scheduled", "Scheduled"),
+        ("betting_open", "Betting Open"),
+        ("betting_closed", "Betting Closed"),
+        ("in_progress", "In Progress"),
+        ("completed", "Completed"),
+        ("cancelled", "Cancelled"),
     ]
 
-    competition = models.ForeignKey(Competition, on_delete=models.CASCADE, related_name='races')
+    competition = models.ForeignKey(Competition, on_delete=models.CASCADE, related_name="races")
     name = models.CharField(max_length=200, help_text="e.g., Monaco Grand Prix")
     location = models.CharField(max_length=200, help_text="e.g., Circuit de Monaco")
     country = models.CharField(max_length=100)
@@ -95,7 +99,7 @@ class Race(models.Model):
     race_datetime = models.DateTimeField()
     betting_deadline = models.DateTimeField(help_text="When betting closes for this race")
 
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='scheduled')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="scheduled")
 
     # API integration fields
     api_race_id = models.CharField(max_length=50, blank=True, null=True)
@@ -108,22 +112,23 @@ class Race(models.Model):
 
     def is_betting_open(self):
         """Check if betting is still open for this race"""
-        return timezone.now() < self.betting_deadline and self.status in ['scheduled', 'betting_open']
+        return timezone.now() < self.betting_deadline and self.status in ["scheduled", "betting_open"]
 
     class Meta:
-        ordering = ['competition', 'round_number']
-        unique_together = ['competition', 'round_number']
+        ordering = ["competition", "round_number"]
+        unique_together = ["competition", "round_number"]
 
 
 class BetType(models.Model):
     """Extensible bet types for future expansion"""
+
     TYPE_CHOICES = [
-        ('top10', 'Top 10 Finishers'),
-        ('podium', 'Podium (Top 3)'),
-        ('winner', 'Race Winner'),
-        ('pole', 'Pole Position'),
-        ('fastest_lap', 'Fastest Lap'),
-        ('dnf', 'Did Not Finish'),
+        ("top10", "Top 10 Finishers"),
+        ("podium", "Podium (Top 3)"),
+        ("winner", "Race Winner"),
+        ("pole", "Pole Position"),
+        ("fastest_lap", "Fastest Lap"),
+        ("dnf", "Did Not Finish"),
     ]
 
     name = models.CharField(max_length=100)
@@ -140,20 +145,19 @@ class BetType(models.Model):
         return f"{self.name} ({self.code})"
 
     class Meta:
-        ordering = ['name']
+        ordering = ["name"]
 
 
 class Bet(models.Model):
     """User's prediction for a race"""
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='bets')
-    race = models.ForeignKey(Race, on_delete=models.CASCADE, related_name='bets')
-    bet_type = models.ForeignKey(BetType, on_delete=models.CASCADE, related_name='bets')
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="bets")
+    race = models.ForeignKey(Race, on_delete=models.CASCADE, related_name="bets")
+    bet_type = models.ForeignKey(BetType, on_delete=models.CASCADE, related_name="bets")
 
     # For Top 10 bet: stored as JSON or related model
-    driver = models.ForeignKey(Driver, on_delete=models.CASCADE, related_name='bets')
-    predicted_position = models.IntegerField(
-        validators=[MinValueValidator(1), MaxValueValidator(20)]
-    )
+    driver = models.ForeignKey(Driver, on_delete=models.CASCADE, related_name="bets")
+    predicted_position = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(20)])
 
     # Scoring
     points_earned = models.IntegerField(default=0)
@@ -166,14 +170,15 @@ class Bet(models.Model):
         return f"{self.user.email} - {self.race.name} - P{self.predicted_position}: {self.driver}"
 
     class Meta:
-        ordering = ['race', 'user', 'predicted_position']
-        unique_together = ['user', 'race', 'bet_type', 'predicted_position']
+        ordering = ["race", "user", "predicted_position"]
+        unique_together = ["user", "race", "bet_type", "predicted_position"]
 
 
 class RaceResult(models.Model):
     """Actual race results"""
-    race = models.ForeignKey(Race, on_delete=models.CASCADE, related_name='results')
-    driver = models.ForeignKey(Driver, on_delete=models.CASCADE, related_name='race_results')
+
+    race = models.ForeignKey(Race, on_delete=models.CASCADE, related_name="results")
+    driver = models.ForeignKey(Driver, on_delete=models.CASCADE, related_name="race_results")
     position = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(22)])
 
     # Additional data
@@ -193,14 +198,15 @@ class RaceResult(models.Model):
         return f"{self.race.name} - P{self.position}: {self.driver}"
 
     class Meta:
-        ordering = ['race', 'position']
-        unique_together = ['race', 'driver']
+        ordering = ["race", "position"]
+        unique_together = ["race", "driver"]
 
 
 class CompetitionStanding(models.Model):
     """Overall competition standings/leaderboard"""
-    competition = models.ForeignKey(Competition, on_delete=models.CASCADE, related_name='standings')
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='standings')
+
+    competition = models.ForeignKey(Competition, on_delete=models.CASCADE, related_name="standings")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="standings")
 
     total_points = models.IntegerField(default=0)
     rank = models.IntegerField(default=0)
@@ -216,5 +222,5 @@ class CompetitionStanding(models.Model):
         return f"{self.competition.name} - #{self.rank} {self.user.email} ({self.total_points} pts)"
 
     class Meta:
-        ordering = ['competition', '-total_points', 'user']
-        unique_together = ['competition', 'user']
+        ordering = ["competition", "-total_points", "user"]
+        unique_together = ["competition", "user"]

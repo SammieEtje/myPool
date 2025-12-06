@@ -26,15 +26,12 @@ class F1BettingAdminSite(AdminSite):
 
         # Competition statistics
         total_competitions = Competition.objects.count()
-        active_competitions = Competition.objects.filter(status='active').count()
+        active_competitions = Competition.objects.filter(status="active").count()
 
         # Race statistics
         total_races = Race.objects.count()
-        completed_races = Race.objects.filter(status='completed').count()
-        upcoming_races = Race.objects.filter(
-            status='scheduled',
-            race_datetime__gte=timezone.now()
-        ).count()
+        completed_races = Race.objects.filter(status="completed").count()
+        upcoming_races = Race.objects.filter(status="scheduled", race_datetime__gte=timezone.now()).count()
 
         # Driver statistics
         total_drivers = Driver.objects.count()
@@ -44,7 +41,7 @@ class F1BettingAdminSite(AdminSite):
         total_bets = Bet.objects.count()
         scored_bets = Bet.objects.filter(is_scored=True).count()
         unscored_bets = total_bets - scored_bets
-        users_with_bets = Bet.objects.values('user').distinct().count()
+        users_with_bets = Bet.objects.values("user").distinct().count()
 
         # Race results statistics
         total_results = RaceResult.objects.count()
@@ -58,45 +55,45 @@ class F1BettingAdminSite(AdminSite):
         total_standings = CompetitionStanding.objects.count()
 
         # Build statistics context
-        extra_context['statistics'] = {
-            'users': {
-                'total': total_users,
-                'active': active_users,
-                'superusers': superusers,
-                'groups': total_groups,
-                'with_bets': users_with_bets,
+        extra_context["statistics"] = {
+            "users": {
+                "total": total_users,
+                "active": active_users,
+                "superusers": superusers,
+                "groups": total_groups,
+                "with_bets": users_with_bets,
             },
-            'competitions': {
-                'total': total_competitions,
-                'active': active_competitions,
+            "competitions": {
+                "total": total_competitions,
+                "active": active_competitions,
             },
-            'races': {
-                'total': total_races,
-                'completed': completed_races,
-                'upcoming': upcoming_races,
-                'pending': total_races - completed_races,
+            "races": {
+                "total": total_races,
+                "completed": completed_races,
+                "upcoming": upcoming_races,
+                "pending": total_races - completed_races,
             },
-            'drivers': {
-                'total': total_drivers,
-                'active': active_drivers,
-                'inactive': total_drivers - active_drivers,
+            "drivers": {
+                "total": total_drivers,
+                "active": active_drivers,
+                "inactive": total_drivers - active_drivers,
             },
-            'bets': {
-                'total': total_bets,
-                'scored': scored_bets,
-                'unscored': unscored_bets,
+            "bets": {
+                "total": total_bets,
+                "scored": scored_bets,
+                "unscored": unscored_bets,
             },
-            'results': {
-                'total': total_results,
-                'verified': verified_results,
-                'unverified': total_results - verified_results,
+            "results": {
+                "total": total_results,
+                "verified": verified_results,
+                "unverified": total_results - verified_results,
             },
-            'bet_types': {
-                'total': total_bet_types,
-                'active': active_bet_types,
+            "bet_types": {
+                "total": total_bet_types,
+                "active": active_bet_types,
             },
-            'standings': {
-                'total': total_standings,
+            "standings": {
+                "total": total_standings,
             },
         }
 
@@ -106,8 +103,8 @@ class F1BettingAdminSite(AdminSite):
 class UserProfileInline(admin.StackedInline):
     model = UserProfile
     can_delete = False
-    verbose_name_plural = 'Profile'
-    fields = ('display_name', 'avatar', 'total_points')
+    verbose_name_plural = "Profile"
+    fields = ("display_name", "avatar", "total_points")
 
 
 class UserAdmin(BaseUserAdmin):
@@ -115,7 +112,7 @@ class UserAdmin(BaseUserAdmin):
 
 
 # Create custom admin site instance
-admin_site = F1BettingAdminSite(name='f1admin')
+admin_site = F1BettingAdminSite(name="f1admin")
 
 # Register User with custom admin
 admin_site.register(User, UserAdmin)
@@ -124,100 +121,74 @@ admin_site.register(Group)
 
 @admin.register(Competition, site=admin_site)
 class CompetitionAdmin(admin.ModelAdmin):
-    list_display = ('name', 'year', 'status', 'start_date', 'end_date', 'created_by')
-    list_filter = ('status', 'year')
-    search_fields = ('name', 'description')
-    filter_horizontal = ('participants',)
+    list_display = ("name", "year", "status", "start_date", "end_date", "created_by")
+    list_filter = ("status", "year")
+    search_fields = ("name", "description")
+    filter_horizontal = ("participants",)
     fieldsets = (
-        ('Basic Information', {
-            'fields': ('name', 'description', 'year', 'status')
-        }),
-        ('Dates', {
-            'fields': ('start_date', 'end_date')
-        }),
-        ('Points Configuration', {
-            'fields': ('points_for_exact_position', 'points_for_correct_driver')
-        }),
-        ('Management', {
-            'fields': ('created_by', 'participants')
-        }),
+        ("Basic Information", {"fields": ("name", "description", "year", "status")}),
+        ("Dates", {"fields": ("start_date", "end_date")}),
+        ("Points Configuration", {"fields": ("points_for_exact_position", "points_for_correct_driver")}),
+        ("Management", {"fields": ("created_by", "participants")}),
     )
 
 
 @admin.register(Driver, site=admin_site)
 class DriverAdmin(admin.ModelAdmin):
-    list_display = ('driver_number', 'first_name', 'last_name', 'team', 'nationality', 'is_active')
-    list_filter = ('team', 'nationality', 'is_active')
-    search_fields = ('first_name', 'last_name', 'team', 'driver_number')
-    ordering = ('driver_number',)
+    list_display = ("driver_number", "first_name", "last_name", "team", "nationality", "is_active")
+    list_filter = ("team", "nationality", "is_active")
+    search_fields = ("first_name", "last_name", "team", "driver_number")
+    ordering = ("driver_number",)
 
 
 @admin.register(Race, site=admin_site)
 class RaceAdmin(admin.ModelAdmin):
-    list_display = ('round_number', 'name', 'competition', 'country', 'race_datetime', 'betting_deadline', 'status')
-    list_filter = ('status', 'competition', 'country')
-    search_fields = ('name', 'location', 'country')
-    ordering = ('competition', 'round_number')
+    list_display = ("round_number", "name", "competition", "country", "race_datetime", "betting_deadline", "status")
+    list_filter = ("status", "competition", "country")
+    search_fields = ("name", "location", "country")
+    ordering = ("competition", "round_number")
     fieldsets = (
-        ('Race Information', {
-            'fields': ('competition', 'name', 'location', 'country', 'round_number')
-        }),
-        ('Schedule', {
-            'fields': ('race_datetime', 'betting_deadline')
-        }),
-        ('Status', {
-            'fields': ('status',)
-        }),
-        ('API Integration', {
-            'fields': ('api_race_id',),
-            'classes': ('collapse',)
-        }),
+        ("Race Information", {"fields": ("competition", "name", "location", "country", "round_number")}),
+        ("Schedule", {"fields": ("race_datetime", "betting_deadline")}),
+        ("Status", {"fields": ("status",)}),
+        ("API Integration", {"fields": ("api_race_id",), "classes": ("collapse",)}),
     )
 
 
 @admin.register(BetType, site=admin_site)
 class BetTypeAdmin(admin.ModelAdmin):
-    list_display = ('name', 'code', 'is_active', 'requires_positions', 'max_selections')
-    list_filter = ('is_active', 'requires_positions')
-    search_fields = ('name', 'code', 'description')
+    list_display = ("name", "code", "is_active", "requires_positions", "max_selections")
+    list_filter = ("is_active", "requires_positions")
+    search_fields = ("name", "code", "description")
 
 
 @admin.register(Bet, site=admin_site)
 class BetAdmin(admin.ModelAdmin):
-    list_display = ('user', 'race', 'bet_type', 'driver', 'predicted_position', 'points_earned', 'is_scored')
-    list_filter = ('race__competition', 'race', 'bet_type', 'is_scored')
-    search_fields = ('user__email', 'driver__last_name', 'race__name')
-    ordering = ('race', 'user', 'predicted_position')
-    readonly_fields = ('points_earned', 'is_scored', 'created_at')
+    list_display = ("user", "race", "bet_type", "driver", "predicted_position", "points_earned", "is_scored")
+    list_filter = ("race__competition", "race", "bet_type", "is_scored")
+    search_fields = ("user__email", "driver__last_name", "race__name")
+    ordering = ("race", "user", "predicted_position")
+    readonly_fields = ("points_earned", "is_scored", "created_at")
 
 
 @admin.register(RaceResult, site=admin_site)
 class RaceResultAdmin(admin.ModelAdmin):
-    list_display = ('race', 'position', 'driver', 'grid_position', 'fastest_lap', 'did_not_finish', 'verified')
-    list_filter = ('race__competition', 'race', 'verified', 'fastest_lap', 'did_not_finish')
-    search_fields = ('driver__last_name', 'race__name')
-    ordering = ('race', 'position')
+    list_display = ("race", "position", "driver", "grid_position", "fastest_lap", "did_not_finish", "verified")
+    list_filter = ("race__competition", "race", "verified", "fastest_lap", "did_not_finish")
+    search_fields = ("driver__last_name", "race__name")
+    ordering = ("race", "position")
     fieldsets = (
-        ('Result Information', {
-            'fields': ('race', 'driver', 'position')
-        }),
-        ('Additional Data', {
-            'fields': ('grid_position', 'fastest_lap', 'did_not_finish', 'dnf_reason')
-        }),
-        ('Verification', {
-            'fields': ('verified',)
-        }),
-        ('API Integration', {
-            'fields': ('api_result_id',),
-            'classes': ('collapse',)
-        }),
+        ("Result Information", {"fields": ("race", "driver", "position")}),
+        ("Additional Data", {"fields": ("grid_position", "fastest_lap", "did_not_finish", "dnf_reason")}),
+        ("Verification", {"fields": ("verified",)}),
+        ("API Integration", {"fields": ("api_result_id",), "classes": ("collapse",)}),
     )
 
 
 @admin.register(CompetitionStanding, site=admin_site)
 class CompetitionStandingAdmin(admin.ModelAdmin):
-    list_display = ('rank', 'user', 'competition', 'total_points', 'races_predicted', 'exact_predictions')
-    list_filter = ('competition',)
-    search_fields = ('user__email', 'competition__name')
-    ordering = ('competition', '-total_points')
-    readonly_fields = ('updated_at',)
+    list_display = ("rank", "user", "competition", "total_points", "races_predicted", "exact_predictions")
+    list_filter = ("competition",)
+    search_fields = ("user__email", "competition__name")
+    ordering = ("competition", "-total_points")
+    readonly_fields = ("updated_at",)

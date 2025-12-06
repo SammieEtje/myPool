@@ -6,4 +6,4 @@ class BettingConfig(AppConfig):
     name = "betting"
 
     def ready(self):
-        import betting.signals
+        import betting.signals  # noqa: F401
