@@ -78,19 +78,16 @@ jobs:
       run: |
         # Stop the build if there are Python syntax errors or undefined names
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        # Exit-zero treats all errors as warnings
-        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-      continue-on-error: true
+        # Run full linting (now blocking)
+        flake8 . --count --max-complexity=10 --max-line-length=127 --statistics
 
     - name: Check code formatting with black
       run: |
         black --check --diff .
-      continue-on-error: true
 
     - name: Check import ordering with isort
       run: |
         isort --check-only --diff .
-      continue-on-error: true
 
   security:
     name: Security Scan
@@ -160,7 +157,6 @@ jobs:
     - name: Check deployment readiness
       run: |
         python manage.py check --deploy --fail-level WARNING
-      continue-on-error: true
 
   integration-test:
     name: Integration Tests
