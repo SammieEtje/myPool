@@ -101,6 +101,12 @@ DATABASES = {
 }
 
 
+# Enable HSTS
+SECURE_HSTS_SECONDS = 3600 # 1 uur
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+
+
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 
