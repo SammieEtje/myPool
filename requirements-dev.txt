@@ -22,7 +22,7 @@ mypy==1.7.1
 
 # Security
 bandit==1.7.5
-safety==2.3.5
+safety==3.7.0
 
 # Performance
 locust==2.18.0
