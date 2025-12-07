@@ -25,7 +25,7 @@ bandit==1.7.5
 safety==2.3.5
 
 # Performance
-locust==2.18.0
+locust==2.42.6
 
 # Debugging
 ipdb==0.13.13
