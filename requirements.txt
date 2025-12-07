@@ -4,7 +4,7 @@ django-allauth==65.3.0
 PyJWT==2.10.1
 cryptography==44.0.1
 django-cors-headers==4.3.1
-requests==2.32.4
+requests==2.32.5
 fido2==1.2.0
 python-decouple==3.8
 whitenoise==6.6.0
