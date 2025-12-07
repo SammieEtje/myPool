@@ -140,7 +140,7 @@ jobs:
 
     - name: Create .env file
       run: |
-        echo "SECRET_KEY=test-secret-key-for-ci" > .env
+        echo "SECRET_KEY=ci-test-secret-key-that-is-long-enough-for-django-security-check-50-chars-plus" > .env
         echo "DEBUG=False" >> .env
         echo "ALLOWED_HOSTS=localhost" >> .env
 
