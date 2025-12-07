@@ -29,9 +29,6 @@ DEBUG = config("DEBUG", default=True, cast=bool)
 
 ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="localhost,127.0.0.1,testserver").split(",")
 
-# Set session cookie to be secure
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
 
 # Application definition
 
@@ -103,16 +100,6 @@ DATABASES = {
     }
 }
 
-
-# Security / HSTS settings. Make these configurable so tests and local
-# development don't get redirected to HTTPS unexpectedly.
-SECURE_HSTS_SECONDS = config("SECURE_HSTS_SECONDS", default=3600, cast=int)
-SECURE_HSTS_INCLUDE_SUBDOMAINS = config(
-    "SECURE_HSTS_INCLUDE_SUBDOMAINS", default=True, cast=bool
-)
-SECURE_HSTS_PRELOAD = config("SECURE_HSTS_PRELOAD", default=True, cast=bool)
-# Don't force SSL redirect by default (tests/dev). Set env var to enable in prod.
-SECURE_SSL_REDIRECT = config("SECURE_SSL_REDIRECT", default=False, cast=bool)
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
