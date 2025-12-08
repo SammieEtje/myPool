@@ -9,7 +9,7 @@ pytest==9.0.2
 pytest-django==4.7.0
 pytest-cov==4.1.0
 coverage==7.3.2
-factory-boy==3.3.0
+factory-boy==3.3.3
 
 pylint==3.0.2
 # Code Quality
