@@ -6,8 +6,9 @@ A modern, responsive web application for Formula 1 betting pools among friends. 
 
 [![CI/CD Pipeline](https://github.com/SammieEtje/myPool/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/SammieEtje/myPool/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/SammieEtje/myPool/branch/main/graph/badge.svg)](https://codecov.io/gh/SammieEtje/myPool)
-[![Python 3.11 | 3.12 | 3.14](https://img.shields.io/badge/Python-3.11%20%7C%203.12%20%7C%203.14-3776AB?logo=python&logoColor=white)](https://www.python.org/)
-[![Django 5.1](https://img.shields.io/badge/Django-5.1-092E20?logo=django&logoColor=white)](https://www.djangoproject.com/)
+[![Python 3.12 | 3.14](https://img.shields.io/badge/Python-3.12%20%7C%203.14-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![Django 5.1.15](https://img.shields.io/badge/Django-5.1.15-092E20?logo=django&logoColor=white)](https://www.djangoproject.com/)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![F1](https://img.shields.io/badge/Racing-F1-DC0000)](https://www.formula1.com/)
 
