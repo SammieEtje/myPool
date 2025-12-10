@@ -100,6 +100,91 @@ python manage.py runserver
 - Admin Panel: http://localhost:8000/admin
 - API: http://localhost:8000/api/
 
+## Development vs Production Mode
+
+### Local Development Mode (Your Laptop)
+
+**The application is already configured for easy local development without HTTPS!**
+
+When running on your laptop, the system automatically disables all HTTPS requirements when `DEBUG=True`. This means you can run the application on `http://localhost:8000` without any SSL certificates or HTTPS setup.
+
+**Quick Setup for Local Development:**
+
+**Method 1: Using the `run` command (Recommended)**
+```bash
+# Simply run the server in development mode
+python manage.py run dev
+
+# Access at http://localhost:8000 (no HTTPS required!)
+```
+
+**Method 2: Using environment files**
+```bash
+# 1. Copy the development configuration
+cp .env.development .env
+
+# 2. Run migrations (if needed)
+python manage.py migrate
+
+# 3. Start the server
+python manage.py runserver
+
+# 4. Access at http://localhost:8000 (no HTTPS required!)
+```
+
+The `run dev` command automatically:
+- Sets `DEBUG=True` to disable HTTPS/SSL requirements
+- Uses console email backend (no SMTP setup needed)
+- Allows access from localhost
+- Shows a helpful banner with configuration details
+
+**What happens in development mode (`DEBUG=True`):**
+- ✅ No HTTPS/SSL required - works on `http://localhost:8000`
+- ✅ Detailed error pages for easier debugging
+- ✅ Cookies work over HTTP
+- ✅ Email backend prints to console (no SMTP setup needed)
+- ✅ SQLite database (no database server required)
+- ✅ Static files served by Django (no CDN needed)
+
+**Environment variables for development:**
+- `DEBUG=True` - Enables development mode
+- `SECRET_KEY` - Uses default insecure key (fine for local dev)
+- `ALLOWED_HOSTS=localhost,127.0.0.1` - Allows local access
+- `EMAIL_BACKEND=django.core.mail.backends.console.EmailBackend` - Prints emails to console
+
+See `.env.development` for a complete development configuration with detailed comments.
+
+### Production Mode (Azure, Heroku, etc.)
+
+For production deployments, you **must** set `DEBUG=False`, which automatically enables all security features.
+
+**Running in production mode locally (for testing):**
+```bash
+# Test production settings on your local machine
+# WARNING: Requires HTTPS certificates
+python manage.py run prod
+```
+
+For actual production deployments:
+
+**What happens in production mode (`DEBUG=False`):**
+- 🔒 HTTPS/SSL required - HTTP requests redirect to HTTPS
+- 🔒 HSTS enabled - Browser enforces HTTPS for 1 year
+- 🔒 Secure cookies - Session/CSRF cookies only sent over HTTPS
+- 🔒 Security headers - XSS protection, clickjacking prevention
+- 🔒 Strong secret key required
+- 🔒 Proper email backend needed for MFA
+
+**Production setup requirements:**
+1. Set `DEBUG=False` in environment variables
+2. Use a strong, random `SECRET_KEY`
+3. Configure `ALLOWED_HOSTS` with your domain
+4. Set up HTTPS/SSL certificates (handled by Azure/Heroku)
+5. Use production database (PostgreSQL, Azure SQL)
+6. Configure email backend for MFA (Gmail SMTP, SendGrid, etc.)
+
+See the [Deployment](#deployment) section below for detailed production setup instructions.
+
 ## Documentation
 
 ### For Administrators
@@ -264,15 +349,22 @@ az webapp up \
 ```
 
 ### Production Checklist
-- [ ] Set `DEBUG=False` in production
-- [ ] Use strong `SECRET_KEY`
-- [ ] Configure proper `ALLOWED_HOSTS`
+
+**IMPORTANT:** Never use development settings (`DEBUG=True`) in production!
+
+- [ ] Set `DEBUG=False` in production environment variables (this automatically enables all security features)
+- [ ] Use strong `SECRET_KEY` (generate with `python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"`)
+- [ ] Configure proper `ALLOWED_HOSTS` with your production domain
 - [ ] Set up PostgreSQL or Azure SQL (migrate from SQLite)
-- [ ] Configure email backend for MFA
+- [ ] Configure email backend for MFA (Gmail SMTP, SendGrid, etc.)
 - [ ] Set up social auth credentials (Google, GitHub)
-- [ ] Enable HTTPS/SSL
+- [ ] Verify HTTPS/SSL is working (automatically enforced when `DEBUG=False`)
 - [ ] Set up automated backups
 - [ ] Configure logging and monitoring
+- [ ] Test that HTTP redirects to HTTPS
+- [ ] Verify secure cookies are working
+
+See the [Development vs Production Mode](#development-vs-production-mode) section for details on security settings.
 
 ## Design System
 
