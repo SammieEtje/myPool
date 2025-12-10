@@ -110,21 +110,33 @@ When running on your laptop, the system automatically disables all HTTPS require
 
 **Quick Setup for Local Development:**
 
+**Method 1: Using the `run` command (Recommended)**
 ```bash
-# 1. Use the development environment configuration
+# Simply run the server in development mode
+python manage.py run dev
+
+# Access at http://localhost:8000 (no HTTPS required!)
+```
+
+**Method 2: Using environment files**
+```bash
+# 1. Copy the development configuration
 cp .env.development .env
 
-# 2. Run migrations
+# 2. Run migrations (if needed)
 python manage.py migrate
 
-# 3. Create a superuser (optional)
-python manage.py createsuperuser
-
-# 4. Start the development server
+# 3. Start the server
 python manage.py runserver
 
-# 5. Access at http://localhost:8000 (no HTTPS required!)
+# 4. Access at http://localhost:8000 (no HTTPS required!)
 ```
+
+The `run dev` command automatically:
+- Sets `DEBUG=True` to disable HTTPS/SSL requirements
+- Uses console email backend (no SMTP setup needed)
+- Allows access from localhost
+- Shows a helpful banner with configuration details
 
 **What happens in development mode (`DEBUG=True`):**
 - ✅ No HTTPS/SSL required - works on `http://localhost:8000`
@@ -144,7 +156,16 @@ See `.env.development` for a complete development configuration with detailed co
 
 ### Production Mode (Azure, Heroku, etc.)
 
-For production deployments, you **must** set `DEBUG=False`, which automatically enables all security features:
+For production deployments, you **must** set `DEBUG=False`, which automatically enables all security features.
+
+**Running in production mode locally (for testing):**
+```bash
+# Test production settings on your local machine
+# WARNING: Requires HTTPS certificates
+python manage.py run prod
+```
+
+For actual production deployments:
 
 **What happens in production mode (`DEBUG=False`):**
 - 🔒 HTTPS/SSL required - HTTP requests redirect to HTTPS

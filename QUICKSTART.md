@@ -2,7 +2,7 @@
 
 ## Get Started in 5 Minutes!
 
-> **💡 Running on Your Laptop?** This application is pre-configured for local development without HTTPS! Just follow the steps below - no SSL certificates or HTTPS setup required. The system automatically runs on `http://localhost:8000` in development mode.
+> **💡 Running on Your Laptop?** This application is pre-configured for local development without HTTPS! Just run `python manage.py run dev` - no SSL certificates or HTTPS setup required. The system automatically runs on `http://localhost:8000` in development mode.
 
 ### Step 1: Install Dependencies
 ```bash
@@ -13,43 +13,43 @@ source venv/bin/activate
 # pip install -r requirements.txt
 ```
 
-### Step 2: Environment Configuration (IMPORTANT!)
+### Step 2: Start the Development Server
 
-**For local development on your laptop:**
+**Method 1: Using the `run` command (Recommended)**
+```bash
+# Start the server in development mode
+python manage.py run dev
+
+# This automatically:
+# ✅ Disables HTTPS/SSL requirements
+# ✅ Runs on http://localhost:8000
+# ✅ Uses SQLite (no database server needed)
+# ✅ Prints emails to console (no SMTP setup needed)
+# ✅ Shows a helpful configuration banner
+```
+
+**Method 2: Using environment files (Traditional)**
 ```bash
 # Copy the development environment configuration
 cp .env.development .env
 
-# This sets DEBUG=True which automatically:
-# ✅ Disables HTTPS/SSL requirements
-# ✅ Allows running on http://localhost:8000
-# ✅ Uses SQLite (no database server needed)
-# ✅ Prints emails to console (no SMTP setup needed)
-```
-
-**The `.env.development` file is already configured for local development** - you don't need to edit anything unless you want to enable social authentication (Google/GitHub).
-
-### Step 3: Database Setup
-```bash
-# Migrations are already run, database is seeded!
-# The database now contains:
-# - Admin user: admin@f1betting.com / admin123
-# - 5 test users: user1@test.com to user5@test.com / test123
-# - 20 F1 drivers (2024 grid)
-# - 2025 F1 Championship with 24 races
-# - Default bet types
-```
-
-### Step 4: Start the Server
-```bash
+# Then start the server
 python manage.py runserver
 ```
 
-### Step 5: Access the Application
+**No additional configuration needed!** The `run dev` command handles everything automatically.
+
+### Step 3: Access the Application
 Open your browser and visit:
 - **Frontend**: http://localhost:8000
 - **Admin Panel**: http://localhost:8000/admin
 - **API**: http://localhost:8000/api/
+
+**Pre-loaded Test Data:**
+- Admin user: `admin@f1betting.com` / `admin123`
+- Test users: `user1@test.com` to `user5@test.com` / `test123`
+- 20 F1 drivers (2024 grid)
+- 2025 F1 Championship with 24 races
 
 ## What You Can Do Now
 
@@ -156,11 +156,17 @@ python manage.py seed_data
 ## Common Commands
 
 ```bash
+# Run development server (no HTTPS)
+python manage.py run dev
+
+# Run production server (HTTPS required)
+python manage.py run prod
+
+# Traditional runserver (uses .env settings)
+python manage.py runserver
+
 # Create admin user
 python manage.py createsuperuser
-
-# Run development server
-python manage.py runserver
 
 # Seed database
 python manage.py seed_data
@@ -175,13 +181,14 @@ python manage.py collectstatic
 ## Troubleshooting
 
 **Getting HTTPS/SSL errors?**
-Make sure you have `DEBUG=True` in your `.env` file:
+Use the development mode command:
 ```bash
-# Check your .env file contains:
-DEBUG=True
+# Simply run in dev mode (easiest)
+python manage.py run dev
 
-# Or use the development configuration:
+# Or check your .env file contains DEBUG=True:
 cp .env.development .env
+python manage.py runserver
 ```
 
 **Port already in use?**
