@@ -31,8 +31,8 @@ CORS_ALLOWED_ORIGINS = [
 try:
     import debug_toolbar  # noqa
 
-    INSTALLED_APPS += ["debug_toolbar"]
-    MIDDLEWARE = ["debug_toolbar.middleware.DebugToolbarMiddleware"] + MIDDLEWARE
+    INSTALLED_APPS += ["debug_toolbar"]  # noqa: F405
+    MIDDLEWARE = ["debug_toolbar.middleware.DebugToolbarMiddleware"] + MIDDLEWARE  # noqa: F405
     INTERNAL_IPS = ["127.0.0.1", "localhost"]
 except ImportError:
     pass
