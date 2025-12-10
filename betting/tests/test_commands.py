@@ -8,6 +8,7 @@ from unittest.mock import patch
 
 from django.contrib.auth.models import User
 from django.core.management import call_command
+from django.core.management.base import CommandError
 from django.test import TestCase
 from django.utils import timezone
 
@@ -375,8 +376,8 @@ class RunCommandTest(TestCase):
         out = StringIO()
         err = StringIO()
 
-        # Should raise error for invalid mode
-        with self.assertRaises(SystemExit):
+        # Should raise CommandError for invalid mode
+        with self.assertRaises(CommandError):
             call_command("run", "invalid", stdout=out, stderr=err)
 
     @patch("os.execvp")
