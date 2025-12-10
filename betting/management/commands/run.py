@@ -59,9 +59,7 @@ class Command(BaseCommand):
             self.stdout.write("  • Email Backend = Console")
             self.stdout.write("  • Database = SQLite")
             self.stdout.write("")
-            self.stdout.write(
-                self.style.SUCCESS(f"✅ Starting server at http://localhost:{addrport}")
-            )
+            self.stdout.write(self.style.SUCCESS(f"✅ Starting server at http://localhost:{addrport}"))
             self.stdout.write(self.style.SUCCESS("   (no HTTPS required - perfect for your laptop!)"))
             self.stdout.write("")
             self.stdout.write(self.style.WARNING("⚠️  DO NOT USE IN PRODUCTION!"))

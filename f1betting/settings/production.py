@@ -19,8 +19,7 @@ ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="").split(",")
 
 if not ALLOWED_HOSTS or ALLOWED_HOSTS == [""]:
     raise ImproperlyConfigured(
-        "ALLOWED_HOSTS must be set in production. "
-        "Set the ALLOWED_HOSTS environment variable to your domain."
+        "ALLOWED_HOSTS must be set in production. " "Set the ALLOWED_HOSTS environment variable to your domain."
     )
 
 # Force strong SECRET_KEY in production
@@ -33,9 +32,7 @@ if SECRET_KEY.startswith("django-insecure-"):
     )
 
 # Production email backend (must be configured)
-EMAIL_BACKEND = config(
-    "EMAIL_BACKEND", default="django.core.mail.backends.smtp.EmailBackend"
-)
+EMAIL_BACKEND = config("EMAIL_BACKEND", default="django.core.mail.backends.smtp.EmailBackend")
 
 # All HTTPS/SSL settings are automatically enabled when DEBUG=False
 # See base.py for the conditional security settings
