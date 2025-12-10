@@ -25,6 +25,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config("SECRET_KEY", default="django-insecure-9nwm*93!-gwh3ym*1dkvsd@b^w@-aj7@93mv@z3pzl#z1lo*9g")
 
 # SECURITY WARNING: don't run with debug turned on in production!
+# DEBUG=True enables development mode:
+#   - Disables HTTPS/SSL requirements (can run on http://localhost:8000)
+#   - Shows detailed error pages
+#   - Disables secure cookie flags
+#   - Perfect for running on your laptop!
 DEBUG = config("DEBUG", default=True, cast=bool)
 
 ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="localhost,127.0.0.1,testserver").split(",")
@@ -218,7 +223,22 @@ EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD", default="")
 # F1 API Configuration
 F1_API_BASE_URL = config("F1_API_BASE_URL", default="https://api.openf1.org/v1")
 
-# Production security settings (only enabled when DEBUG=False)
+# ==============================================================================
+# PRODUCTION SECURITY SETTINGS
+# ==============================================================================
+# These settings are ONLY enabled when DEBUG=False (production mode)
+# They enforce HTTPS/SSL and secure cookies for production deployments
+#
+# For LOCAL DEVELOPMENT on your laptop:
+#   - Set DEBUG=True in your .env file (or use .env.development)
+#   - All these security settings will be automatically disabled
+#   - You can run the app on http://localhost:8000 without HTTPS
+#
+# For PRODUCTION deployments (Azure, Heroku, etc.):
+#   - Set DEBUG=False in your environment variables
+#   - All these security settings will be automatically enabled
+#   - HTTPS/SSL will be required
+# ==============================================================================
 if not DEBUG:
     # HTTPS/SSL settings
     SECURE_SSL_REDIRECT = config("SECURE_SSL_REDIRECT", default=True, cast=bool)

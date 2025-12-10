@@ -2,6 +2,8 @@
 
 ## Get Started in 5 Minutes!
 
+> **💡 Running on Your Laptop?** This application is pre-configured for local development without HTTPS! Just follow the steps below - no SSL certificates or HTTPS setup required. The system automatically runs on `http://localhost:8000` in development mode.
+
 ### Step 1: Install Dependencies
 ```bash
 # Activate virtual environment (already created)
@@ -11,7 +13,23 @@ source venv/bin/activate
 # pip install -r requirements.txt
 ```
 
-### Step 2: Database Setup
+### Step 2: Environment Configuration (IMPORTANT!)
+
+**For local development on your laptop:**
+```bash
+# Copy the development environment configuration
+cp .env.development .env
+
+# This sets DEBUG=True which automatically:
+# ✅ Disables HTTPS/SSL requirements
+# ✅ Allows running on http://localhost:8000
+# ✅ Uses SQLite (no database server needed)
+# ✅ Prints emails to console (no SMTP setup needed)
+```
+
+**The `.env.development` file is already configured for local development** - you don't need to edit anything unless you want to enable social authentication (Google/GitHub).
+
+### Step 3: Database Setup
 ```bash
 # Migrations are already run, database is seeded!
 # The database now contains:
@@ -22,12 +40,12 @@ source venv/bin/activate
 # - Default bet types
 ```
 
-### Step 3: Start the Server
+### Step 4: Start the Server
 ```bash
 python manage.py runserver
 ```
 
-### Step 4: Access the Application
+### Step 5: Access the Application
 Open your browser and visit:
 - **Frontend**: http://localhost:8000
 - **Admin Panel**: http://localhost:8000/admin
@@ -156,6 +174,16 @@ python manage.py collectstatic
 
 ## Troubleshooting
 
+**Getting HTTPS/SSL errors?**
+Make sure you have `DEBUG=True` in your `.env` file:
+```bash
+# Check your .env file contains:
+DEBUG=True
+
+# Or use the development configuration:
+cp .env.development .env
+```
+
 **Port already in use?**
 ```bash
 python manage.py runserver 8001
@@ -170,6 +198,9 @@ python manage.py collectstatic --clear
 - Chrome: Ctrl+Shift+Delete
 - Firefox: Ctrl+Shift+Del
 - Safari: Cmd+Option+E
+
+**Want to deploy to production?**
+See the **[README.md](README.md#development-vs-production-mode)** for production deployment instructions. Never use `DEBUG=True` in production!
 
 ## Getting Help
 
