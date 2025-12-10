@@ -1,0 +1,20 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | F1 Betting Pool{% endblock %}
+
+{% block branding %}
+<div id="site-name"><a href="{% url 'admin:index' %}">F1 Betting Pool Administration</a></div>
+{% if user.is_active and user.is_staff %}
+<div id="user-tools">
+    Welcome, <strong>{% firstof user.get_short_name user.get_username %}</strong>.
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extrastyle %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'admin/css/custom_admin.css' %}">
+{% endblock %}
+
+{% block nav-global %}{% endblock %}

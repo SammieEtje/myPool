@@ -1,0 +1,62 @@
+/* Custom Admin Panel Styles - Improved Contrast */
+
+/* Fix poor contrast in permissions widget (select multiple) */
+.selector select option:checked,
+.selector .selector-chosen select option:checked {
+    background-color: #2271b1 !important; /* Django blue */
+    color: #ffffff !important;
+}
+
+/* Improve hover state */
+.selector select option:hover {
+    background-color: #3582c4 !important;
+    color: #ffffff !important;
+}
+
+/* Better focus state */
+.selector select option:focus {
+    outline: 2px solid #2271b1;
+    outline-offset: -2px;
+}
+
+/* FilteredSelectMultiple widget improvements */
+.selector-available select option:checked,
+.selector-chosen select option:checked {
+    background-color: #2271b1 !important;
+    color: #ffffff !important;
+}
+
+/* Improve the filter input contrast */
+.selector-filter input {
+    border: 1px solid #ddd;
+    padding: 5px;
+}
+
+.selector-filter input:focus {
+    border-color: #2271b1;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(34, 113, 177, 0.2);
+}
+
+/* Better visual separation for selector boxes */
+.selector .selector-available,
+.selector .selector-chosen {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* Improve arrow buttons */
+.selector ul.selector-chooser a {
+    background-color: #2271b1;
+    border-color: #2271b1;
+}
+
+.selector ul.selector-chooser a:hover {
+    background-color: #3582c4;
+    border-color: #3582c4;
+}
+
+.selector ul.selector-chooser a:focus {
+    outline: 2px solid #2271b1;
+    outline-offset: 2px;
+}

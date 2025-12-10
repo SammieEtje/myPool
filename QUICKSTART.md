@@ -180,6 +180,21 @@ python manage.py collectstatic
 
 ## Troubleshooting
 
+**Getting "accessing the development server over HTTPS" errors?**
+Your browser is trying to use HTTPS, but the dev server only supports HTTP.
+```bash
+# 1. Make sure you're using http:// (not https://)
+http://localhost:8000   ✅ Correct
+https://localhost:8000  ❌ Wrong
+
+# 2. Clear browser HSTS cache:
+# Chrome/Edge: chrome://net-internals/#hsts → Delete "localhost"
+# Firefox: Delete SiteSecurityServiceState.txt from profile
+# Safari: Clear all browsing data
+
+# 3. Or use incognito/private window
+```
+
 **Getting HTTPS/SSL errors?**
 Use the development mode command:
 ```bash
