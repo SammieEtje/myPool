@@ -5,6 +5,7 @@ This configuration enforces HTTPS/SSL and all security features.
 Use with: python manage.py run prod
 """
 
+from decouple import config
 from django.core.exceptions import ImproperlyConfigured
 
 from .base import *  # noqa
@@ -38,5 +39,3 @@ EMAIL_BACKEND = config(
 
 # All HTTPS/SSL settings are automatically enabled when DEBUG=False
 # See base.py for the conditional security settings
-
-print("🔒 Running in PRODUCTION mode - HTTPS/SSL enforced!")

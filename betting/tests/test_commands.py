@@ -4,9 +4,11 @@ Test suite for F1 Betting Pool management commands
 
 from datetime import timedelta
 from io import StringIO
+from unittest.mock import patch
 
 from django.contrib.auth.models import User
 from django.core.management import call_command
+from django.core.management.base import CommandError
 from django.test import TestCase
 from django.utils import timezone
 
@@ -303,3 +305,87 @@ class ScoreRaceCommandTest(TestCase):
         bet.refresh_from_db()
         self.assertEqual(bet.points_earned, 10)
         self.assertTrue(bet.is_scored)
+
+
+class RunCommandTest(TestCase):
+    """Test run management command for dev/prod mode switching"""
+
+    @patch("os.execvp")
+    def test_run_dev_mode(self, mock_execvp):
+        """Test run command with dev mode"""
+        out = StringIO()
+        call_command("run", "dev", stdout=out)
+
+        output = out.getvalue()
+        # Check banner is displayed
+        self.assertIn("DEVELOPMENT MODE", output)
+        self.assertIn("DEBUG = True", output)
+        self.assertIn("HTTPS/SSL = Disabled", output)
+        self.assertIn("DO NOT USE IN PRODUCTION", output)
+
+        # Check execvp was called with correct settings module
+        mock_execvp.assert_called_once()
+        args = mock_execvp.call_args[0][1]
+        self.assertIn("--settings", args)
+        self.assertIn("f1betting.settings.development", args)
+
+    @patch("os.execvp")
+    def test_run_prod_mode(self, mock_execvp):
+        """Test run command with prod mode"""
+        out = StringIO()
+        call_command("run", "prod", stdout=out)
+
+        output = out.getvalue()
+        # Check banner is displayed
+        self.assertIn("PRODUCTION MODE", output)
+        self.assertIn("DEBUG = False", output)
+        self.assertIn("HTTPS/SSL = Enabled", output)
+        self.assertIn("HTTPS/SSL REQUIRED", output)
+
+        # Check execvp was called with correct settings module
+        mock_execvp.assert_called_once()
+        args = mock_execvp.call_args[0][1]
+        self.assertIn("--settings", args)
+        self.assertIn("f1betting.settings.production", args)
+
+    @patch("os.execvp")
+    def test_run_custom_port(self, mock_execvp):
+        """Test run command with custom port"""
+        out = StringIO()
+        call_command("run", "dev", "8001", stdout=out)
+
+        output = out.getvalue()
+        self.assertIn("8001", output)
+
+        # Check port is passed to runserver
+        args = mock_execvp.call_args[0][1]
+        self.assertIn("8001", args)
+
+    @patch("os.execvp")
+    def test_run_noreload_flag(self, mock_execvp):
+        """Test run command with --noreload flag"""
+        out = StringIO()
+        call_command("run", "dev", noreload=True, stdout=out)
+
+        # Check --noreload is passed to runserver
+        args = mock_execvp.call_args[0][1]
+        self.assertIn("--noreload", args)
+
+    def test_run_invalid_mode(self):
+        """Test run command rejects invalid mode"""
+        out = StringIO()
+        err = StringIO()
+
+        # Should raise error for invalid mode
+        with self.assertRaises(SystemExit):
+            call_command("run", "invalid", stdout=out, stderr=err)
+
+    @patch("os.execvp")
+    def test_run_default_port(self, mock_execvp):
+        """Test run command uses default port 8000"""
+        out = StringIO()
+        call_command("run", "dev", stdout=out)
+
+        # Check default port is used
+        args = mock_execvp.call_args[0][1]
+        self.assertIn("8000", args)

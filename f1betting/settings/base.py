@@ -15,7 +15,9 @@ from pathlib import Path
 from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+# Since this file is in f1betting/settings/base.py, we need three .parent calls
+# to get to the project root: base.py -> settings/ -> f1betting/ -> myPool/
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 
 # Quick-start development settings - unsuitable for production

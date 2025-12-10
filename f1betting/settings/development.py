@@ -10,8 +10,8 @@ from .base import *  # noqa
 # Force development mode
 DEBUG = True
 
-# Allow localhost access
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", "testserver", "*"]
+# Allow localhost access (no wildcard for security)
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "testserver"]
 
 # Use console email backend (prints emails to terminal)
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
@@ -36,5 +36,3 @@ try:
     INTERNAL_IPS = ["127.0.0.1", "localhost"]
 except ImportError:
     pass
-
-print("🏎️  Running in DEVELOPMENT mode - HTTPS disabled, perfect for your laptop!")
