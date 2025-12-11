@@ -113,7 +113,9 @@ const app = {
       });
 
       if (response.ok) {
-        const competitions = await response.json();
+        const data = await response.json();
+        // Handle paginated response (DRF returns {results: [...], count: N})
+        const competitions = data.results || data;
         this.competitions = competitions;
         loading.classList.add('hidden');
 
@@ -220,7 +222,8 @@ const app = {
       });
 
       if (response.ok) {
-        const races = await response.json();
+        const data = await response.json();
+        const races = data.results || data;
         loading.classList.add('hidden');
 
         if (races.length === 0) {
@@ -317,7 +320,8 @@ const app = {
       });
 
       if (response.ok) {
-        const standings = await response.json();
+        const data = await response.json();
+        const standings = data.results || data;
         loading.classList.add('hidden');
 
         if (standings.length === 0) {
@@ -377,7 +381,8 @@ const app = {
       });
 
       if (response.ok) {
-        const bets = await response.json();
+        const data = await response.json();
+        const bets = data.results || data;
         loading.classList.add('hidden');
 
         if (bets.length === 0) {
@@ -417,7 +422,8 @@ const app = {
       });
 
       if (response.ok) {
-        const competitions = await response.json();
+        const data = await response.json();
+        const competitions = data.results || data;
         competitions.forEach(comp => {
           const option = document.createElement('option');
           option.value = comp.id;
@@ -478,7 +484,8 @@ const app = {
       });
 
       if (response.ok) {
-        this.drivers = await response.json();
+        const data = await response.json();
+        this.drivers = data.results || data;
       }
     } catch (error) {
       console.error('Failed to load drivers:', error);
@@ -600,7 +607,8 @@ const app = {
       });
 
       if (response.ok) {
-        const results = await response.json();
+        const data = await response.json();
+        const results = data.results || data;
 
         if (results.length === 0) {
           alert('Results not available yet');
