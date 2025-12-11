@@ -1,0 +1,107 @@
+version: '3.8'
+
+services:
+  # PostgreSQL database
+  db:
+    image: postgres:15-alpine
+    container_name: f1betting-db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-f1betting}
+      POSTGRES_USER: ${POSTGRES_USER:-f1user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-f1user}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - f1betting-network
+
+  # F1 Betting Pool application
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: f1betting-web
+    image: f1betting:${VERSION:-latest}
+    ports:
+      - "${PORT:-8000}:8000"
+    environment:
+      # Django settings
+      SECRET_KEY: ${SECRET_KEY:?SECRET_KEY must be set}
+      DEBUG: ${DEBUG:-False}
+      ALLOWED_HOSTS: ${ALLOWED_HOSTS:?ALLOWED_HOSTS must be set}
+
+      # Database
+      DATABASE_URL: postgresql://${POSTGRES_USER:-f1user}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-f1betting}
+
+      # Email (optional)
+      EMAIL_BACKEND: ${EMAIL_BACKEND:-django.core.mail.backends.smtp.EmailBackend}
+      EMAIL_HOST: ${EMAIL_HOST:-}
+      EMAIL_PORT: ${EMAIL_PORT:-587}
+      EMAIL_USE_TLS: ${EMAIL_USE_TLS:-True}
+      EMAIL_HOST_USER: ${EMAIL_HOST_USER:-}
+      EMAIL_HOST_PASSWORD: ${EMAIL_HOST_PASSWORD:-}
+
+      # Social auth (optional)
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+      GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID:-}
+      GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET:-}
+
+      # F1 API
+      F1_API_BASE_URL: ${F1_API_BASE_URL:-https://api.openf1.org/v1}
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:8000/admin/', timeout=5)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+    networks:
+      - f1betting-network
+    command: >
+      sh -c "
+        python manage.py migrate --noinput &&
+        gunicorn f1betting.wsgi:application
+          --bind 0.0.0.0:8000
+          --workers 4
+          --timeout 60
+          --access-logfile -
+          --error-logfile -
+          --log-level info
+      "
+
+  # Nginx reverse proxy (optional, recommended for production)
+  nginx:
+    image: nginx:alpine
+    container_name: f1betting-nginx
+    ports:
+      - "${HTTPS_PORT:-443}:443"
+      - "${HTTP_PORT:-80}:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./staticfiles:/app/staticfiles:ro
+      - ./certbot/conf:/etc/letsencrypt:ro
+      - ./certbot/www:/var/www/certbot:ro
+    depends_on:
+      - web
+    restart: unless-stopped
+    networks:
+      - f1betting-network
+    profiles:
+      - production
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  f1betting-network:
+    driver: bridge
