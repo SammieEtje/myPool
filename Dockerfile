@@ -57,15 +57,15 @@ COPY --chown=appuser:appuser . .
 # Switch to non-root user
 USER appuser
 
-# Collect static files
-RUN python manage.py collectstatic --noinput --settings=f1betting.settings.production
+# Collect static files (use base settings to avoid requiring production env vars at build time)
+RUN python manage.py collectstatic --noinput --settings=f1betting.settings.base
 
 # Expose port
 EXPOSE 8000
 
-# Health check
+# Health check (using built-in urllib for better reliability)
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-    CMD python -c "import requests; requests.get('http://localhost:8000/admin/', timeout=5)" || exit 1
+    CMD python -c "from urllib.request import urlopen; urlopen('http://localhost:8000/admin/', timeout=5)" || exit 1
 
 # Run gunicorn
 CMD ["gunicorn", "f1betting.wsgi:application", \

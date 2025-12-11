@@ -35,6 +35,7 @@ staticfiles/
 .env
 .venv
 .env.test
+.env.production
 
 # IDEs
 .vscode/

@@ -115,7 +115,7 @@ const app = {
       if (response.ok) {
         const data = await response.json();
         // Handle paginated response (DRF returns {results: [...], count: N})
-        const competitions = data.results || data;
+        const competitions = Array.isArray(data) ? data : (data.results || []);
         this.competitions = competitions;
         loading.classList.add('hidden');
 
@@ -223,7 +223,7 @@ const app = {
 
       if (response.ok) {
         const data = await response.json();
-        const races = data.results || data;
+        const races = Array.isArray(data) ? data : (data.results || []);
         loading.classList.add('hidden');
 
         if (races.length === 0) {
@@ -321,7 +321,7 @@ const app = {
 
       if (response.ok) {
         const data = await response.json();
-        const standings = data.results || data;
+        const standings = Array.isArray(data) ? data : (data.results || []);
         loading.classList.add('hidden');
 
         if (standings.length === 0) {
@@ -382,7 +382,7 @@ const app = {
 
       if (response.ok) {
         const data = await response.json();
-        const bets = data.results || data;
+        const bets = Array.isArray(data) ? data : (data.results || []);
         loading.classList.add('hidden');
 
         if (bets.length === 0) {
@@ -423,7 +423,7 @@ const app = {
 
       if (response.ok) {
         const data = await response.json();
-        const competitions = data.results || data;
+        const competitions = Array.isArray(data) ? data : (data.results || []);
         competitions.forEach(comp => {
           const option = document.createElement('option');
           option.value = comp.id;
@@ -485,7 +485,7 @@ const app = {
 
       if (response.ok) {
         const data = await response.json();
-        this.drivers = data.results || data;
+        this.drivers = Array.isArray(data) ? data : (data.results || []);
       }
     } catch (error) {
       console.error('Failed to load drivers:', error);
@@ -608,7 +608,7 @@ const app = {
 
       if (response.ok) {
         const data = await response.json();
-        const results = data.results || data;
+        const results = Array.isArray(data) ? data : (data.results || []);
 
         if (results.length === 0) {
           alert('Results not available yet');
