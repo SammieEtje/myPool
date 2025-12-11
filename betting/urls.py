@@ -15,5 +15,6 @@ router.register(r"standings", views.CompetitionStandingViewSet, basename="standi
 router.register(r"race-results", views.RaceResultViewSet, basename="raceresult")
 
 urlpatterns = [
+    path("health/", views.health_check, name="health_check"),
     path("api/", include(router.urls)),
 ]

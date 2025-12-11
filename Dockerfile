@@ -32,8 +32,7 @@ FROM python:3.12-slim
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    PATH=/home/appuser/.local/bin:$PATH \
-    DJANGO_SETTINGS_MODULE=f1betting.settings.production
+    PATH=/home/appuser/.local/bin:$PATH
 
 # Create non-root user for security
 RUN useradd -m -u 1000 appuser && \
@@ -63,9 +62,9 @@ RUN python manage.py collectstatic --noinput --settings=f1betting.settings.base
 # Expose port
 EXPOSE 8000
 
-# Health check (using built-in urllib for better reliability)
+# Health check (using dedicated endpoint for better reliability)
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-    CMD python -c "from urllib.request import urlopen; urlopen('http://localhost:8000/admin/', timeout=5)" || exit 1
+    CMD python -c "from urllib.request import urlopen; urlopen('http://localhost:8000/health/', timeout=5)" || exit 1
 
 # Run gunicorn
 CMD ["gunicorn", "f1betting.wsgi:application", \
