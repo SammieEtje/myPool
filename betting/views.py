@@ -47,6 +47,21 @@ class CompetitionViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = CompetitionSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
 
+    def get_queryset(self):
+        """
+        Override queryset to include all competitions for detail views,
+        but filter to published/active/completed for list views.
+        """
+        queryset = Competition.objects.select_related("created_by", "created_by__profile").prefetch_related(
+            "participants", "races"
+        )
+
+        # Only filter by status for list views
+        if self.action == "list":
+            queryset = queryset.filter(status__in=["published", "active", "completed"])
+
+        return queryset
+
     @action(detail=True, methods=["get"])
     def standings(self, request, pk=None):
         """Get standings/leaderboard for a competition"""
