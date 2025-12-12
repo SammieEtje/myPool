@@ -1,0 +1,99 @@
+# ==============================================================================
+# Docker Ignore - Exclude files from production builds
+# ==============================================================================
+
+# Test files and directories
+**/tests/
+**/test_*.py
+**/*_test.py
+**/testing/
+pytest.ini
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# Development dependencies
+requirements-dev.txt
+.env.development
+.env.example
+
+# Development tools
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Git and CI/CD (not needed in container)
+.git/
+.gitignore
+.github/
+
+# Documentation (reduce image size)
+*.md
+docs/
+ADMIN_TUTORIAL.md
+TESTING.md
+AUTHENTICATION_GUIDE.md
+QUICKSTART.md
+TROUBLESHOOTING_CSS.md
+
+# Python cache and build artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+
+# Database files (use external DB in production)
+*.sqlite3
+*.db
+db.sqlite3
+
+# Collected static files (will be collected in container)
+staticfiles/
+media/
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Local environment files
+.env.local
+.env.*.local
+
+# Docker files (don't copy Docker into Docker)
+Dockerfile*
+docker-compose*.yml
+.dockerignore

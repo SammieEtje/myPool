@@ -61,6 +61,51 @@ class CompetitionAPITest(TestCase):
         response = self.client.post(f"/api/competitions/{self.competition.id}/join/")
         self.assertIn(response.status_code, [status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN])
 
+    def test_join_active_competition(self):
+        """Test joining competition with active status"""
+        active_competition = Competition.objects.create(
+            name="F1 2024",
+            year=2024,
+            status="active",
+            start_date=timezone.now().date(),
+            end_date=timezone.now().date() + timedelta(days=200),
+            created_by=self.admin,
+        )
+        self.client.force_authenticate(user=self.user)
+        response = self.client.post(f"/api/competitions/{active_competition.id}/join/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn(self.user, active_competition.participants.all())
+
+    def test_join_draft_competition(self):
+        """Test joining competition with draft status fails"""
+        draft_competition = Competition.objects.create(
+            name="F1 2023",
+            year=2023,
+            status="draft",
+            start_date=timezone.now().date(),
+            end_date=timezone.now().date() + timedelta(days=100),
+            created_by=self.admin,
+        )
+        self.client.force_authenticate(user=self.user)
+        response = self.client.post(f"/api/competitions/{draft_competition.id}/join/")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertNotIn(self.user, draft_competition.participants.all())
+
+    def test_join_completed_competition(self):
+        """Test joining competition with completed status fails"""
+        completed_competition = Competition.objects.create(
+            name="F1 2022",
+            year=2022,
+            status="completed",
+            start_date=timezone.now().date() - timedelta(days=400),
+            end_date=timezone.now().date() - timedelta(days=100),
+            created_by=self.admin,
+        )
+        self.client.force_authenticate(user=self.user)
+        response = self.client.post(f"/api/competitions/{completed_competition.id}/join/")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertNotIn(self.user, completed_competition.participants.all())
+
 
 class DriverAPITest(TestCase):
     """Test Driver API endpoints"""

@@ -5,6 +5,7 @@ This configuration enforces HTTPS/SSL and all security features.
 Use with: python manage.py run prod
 """
 
+import dj_database_url
 from decouple import config
 from django.core.exceptions import ImproperlyConfigured
 
@@ -33,6 +34,21 @@ if SECRET_KEY.startswith("django-insecure-"):
 
 # Production email backend (must be configured)
 EMAIL_BACKEND = config("EMAIL_BACKEND", default="django.core.mail.backends.smtp.EmailBackend")
+
+# Database configuration using DATABASE_URL
+# Override default SQLite with PostgreSQL in production
+DATABASE_URL = config("DATABASE_URL", default=None)
+if DATABASE_URL:
+    DATABASES["default"] = dj_database_url.parse(  # noqa: F405
+        DATABASE_URL,
+        conn_max_age=600,  # Connection pooling
+        conn_health_checks=True,
+    )
+
+# CSRF trusted origins for proxied HTTPS deployments
+# Required when using reverse proxy (nginx, load balancer, etc.)
+CSRF_TRUSTED_ORIGINS = config("CSRF_TRUSTED_ORIGINS", default="").split(",")
+CSRF_TRUSTED_ORIGINS = [origin.strip() for origin in CSRF_TRUSTED_ORIGINS if origin.strip()]
 
 # All HTTPS/SSL settings are automatically enabled when DEBUG=False
 # See base.py for the conditional security settings

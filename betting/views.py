@@ -1,3 +1,4 @@
+from django.http import JsonResponse
 from django.utils import timezone
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
@@ -16,6 +17,14 @@ from .serializers import (
     RaceSerializer,
     UserProfileSerializer,
 )
+
+
+def health_check(request):
+    """
+    Dedicated health check endpoint for Docker and monitoring systems.
+    Returns a simple JSON response without authentication or redirects.
+    """
+    return JsonResponse({"status": "healthy", "service": "f1betting"})
 
 
 class IsAuthenticatedOrReadOnly(permissions.BasePermission):
@@ -66,7 +75,8 @@ class CompetitionViewSet(viewsets.ReadOnlyModelViewSet):
 
         competition = self.get_object()
 
-        if competition.status != "published":
+        # Allow joining published and active competitions
+        if competition.status not in ["published", "active"]:
             return Response({"error": "Competition is not open for joining"}, status=status.HTTP_400_BAD_REQUEST)
 
         if request.user in competition.participants.all():
