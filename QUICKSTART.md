@@ -2,20 +2,96 @@
 
 ## Get Started in 5 Minutes!
 
-> **💡 Running on Your Laptop?** This application is pre-configured for local development without HTTPS! Just run `python manage.py run dev` - no SSL certificates or HTTPS setup required. The system automatically runs on `http://localhost:8000` in development mode.
+Choose your preferred method: **Docker** (fastest, recommended) or **Local Development** (traditional).
+
+---
+
+## Method 1: Docker (Recommended - Fastest!)
+
+**No Python setup required!** Docker handles everything for you.
+
+### Prerequisites
+- Docker and Docker Compose installed
+- That's it!
+
+### Step 1: Start with Docker Compose
+```bash
+# 1. Copy environment template
+cp .env.production.template .env.production
+
+# 2. Edit .env.production (set SECRET_KEY and POSTGRES_PASSWORD at minimum)
+nano .env.production  # or use your preferred editor
+
+# 3. Start everything with one command
+docker-compose --env-file .env.production up -d
+
+# 4. Create admin user
+docker-compose exec web python manage.py createsuperuser
+```
+
+### Step 2: Access the Application
+- **Frontend**: http://localhost:8000
+- **Admin Panel**: http://localhost:8000/admin
+- **API**: http://localhost:8000/api/
+
+**That's it!** Your F1 Betting Pool is running with PostgreSQL, all dependencies installed automatically.
+
+### Useful Docker Commands
+```bash
+# View logs
+docker-compose logs -f web
+
+# Stop the application
+docker-compose down
+
+# Restart services
+docker-compose restart
+
+# Seed database with test data
+docker-compose exec web python manage.py seed_data
+
+# Score a race
+docker-compose exec web python manage.py score_race 1
+
+# Access Django shell
+docker-compose exec web python manage.py shell
+```
+
+📚 **For production deployment, see [DEPLOYMENT.md](DEPLOYMENT.md)**
+
+---
+
+## Method 2: Local Development (Traditional)
+
+> **💡 Running on Your Laptop?** This application is pre-configured for local development without HTTPS! Just run `python manage.py run dev` - no SSL certificates or HTTPS setup required.
+
+### Prerequisites
+- Python 3.11+
+- pip
+- Virtual environment (recommended)
 
 ### Step 1: Install Dependencies
 ```bash
-# Activate virtual environment (already created)
-source venv/bin/activate
+# Create and activate virtual environment
+python3 -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
 
-# Dependencies are already installed, but if you need to reinstall:
-# pip install -r requirements.txt
+# Install dependencies
+pip install -r requirements.txt
 ```
 
-### Step 2: Start the Development Server
+### Step 2: Set Up Database
+```bash
+# Run migrations
+python manage.py migrate
 
-**Method 1: Using the `run` command (Recommended)**
+# Seed with test data (optional but recommended)
+python manage.py seed_data
+```
+
+### Step 3: Start the Development Server
+
+**Option A: Using the `run` command (Easiest)**
 ```bash
 # Start the server in development mode
 python manage.py run dev
@@ -28,7 +104,7 @@ python manage.py run dev
 # ✅ Shows a helpful configuration banner
 ```
 
-**Method 2: Using environment files (Traditional)**
+**Option B: Using environment files (Traditional)**
 ```bash
 # Copy the development environment configuration
 cp .env.development .env
@@ -39,17 +115,19 @@ python manage.py runserver
 
 **No additional configuration needed!** The `run dev` command handles everything automatically.
 
-### Step 3: Access the Application
+### Step 4: Access the Application
 Open your browser and visit:
 - **Frontend**: http://localhost:8000
 - **Admin Panel**: http://localhost:8000/admin
 - **API**: http://localhost:8000/api/
 
-**Pre-loaded Test Data:**
+**Pre-loaded Test Data (if you ran seed_data):**
 - Admin user: `admin@f1betting.com` / `admin123`
 - Test users: `user1@test.com` to `user5@test.com` / `test123`
-- 20 F1 drivers (2024 grid)
+- 20 F1 drivers (2025 grid)
 - 2025 F1 Championship with 24 races
+
+---
 
 ## What You Can Do Now
 
@@ -155,6 +233,25 @@ python manage.py seed_data
 
 ## Common Commands
 
+### For Docker Users
+```bash
+# View logs
+docker-compose logs -f web
+
+# Run management commands
+docker-compose exec web python manage.py <command>
+
+# Examples:
+docker-compose exec web python manage.py seed_data
+docker-compose exec web python manage.py score_race 1
+docker-compose exec web python manage.py createsuperuser
+
+# Stop/Start
+docker-compose down
+docker-compose up -d
+```
+
+### For Local Development Users
 ```bash
 # Run development server (no HTTPS)
 python manage.py run dev

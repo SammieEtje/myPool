@@ -6,8 +6,9 @@ A modern, responsive web application for Formula 1 betting pools among friends. 
 
 [![CI/CD Pipeline](https://github.com/SammieEtje/myPool/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/SammieEtje/myPool/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/SammieEtje/myPool/branch/main/graph/badge.svg)](https://codecov.io/gh/SammieEtje/myPool)
-[![Python 3.12 | 3.14](https://img.shields.io/badge/Python-3.12%20%7C%203.14-3776AB?logo=python&logoColor=white)](https://www.python.org/)
-[![Django 5.1.15](https://img.shields.io/badge/Django-5.1.15-092E20?logo=django&logoColor=white)](https://www.djangoproject.com/)
+[![Python 3.11+](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![Django 5.2.9](https://img.shields.io/badge/Django-5.2.9-092E20?logo=django&logoColor=white)](https://www.djangoproject.com/)
+[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![F1](https://img.shields.io/badge/Racing-F1-DC0000)](https://www.formula1.com/)
@@ -44,12 +45,43 @@ A modern, responsive web application for Formula 1 betting pools among friends. 
 
 ## Quick Start
 
-### Prerequisites
+### Option 1: Docker (Recommended - Fastest!)
+
+The easiest way to get started. No need to install Python dependencies manually!
+
+**Prerequisites:** Docker and Docker Compose
+
+```bash
+# 1. Clone the repository
+git clone <your-repo-url>
+cd myPool
+
+# 2. Set up environment
+cp .env.production.template .env.production
+# Edit .env.production with your settings (especially SECRET_KEY and POSTGRES_PASSWORD)
+
+# 3. Start everything with one command
+docker-compose --env-file .env.production up -d
+
+# 4. Create admin user
+docker-compose exec web python manage.py createsuperuser
+
+# 5. Access the application
+# Frontend: http://localhost:8000
+# Admin Panel: http://localhost:8000/admin
+# API: http://localhost:8000/api/
+```
+
+See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed Docker deployment instructions.
+
+### Option 2: Local Development (Traditional)
+
+**Prerequisites:**
 - Python 3.11+
 - pip
 - Virtual environment (recommended)
 
-### Installation
+**Installation:**
 
 1. **Clone the repository**
 ```bash
@@ -70,8 +102,8 @@ pip install -r requirements.txt
 
 4. **Set up environment variables**
 ```bash
-cp .env.example .env
-# Edit .env with your configuration
+cp .env.development .env
+# Or just run: python manage.py run dev
 ```
 
 5. **Run migrations**
@@ -84,16 +116,17 @@ python manage.py migrate
 python manage.py seed_data
 ```
 
-This will create:
+This creates:
 - Admin user: `admin@f1betting.com` / `admin123`
 - 5 test users: `user1@test.com` to `user5@test.com` / `test123`
-- 20 F1 drivers (2024 grid)
+- 20 F1 drivers (2025 grid)
 - 2025 F1 Championship with 24 races
 - Default bet types
 
 7. **Run the development server**
 ```bash
-python manage.py runserver
+python manage.py run dev  # Easiest - no HTTPS required
+# Or: python manage.py runserver
 ```
 
 8. **Access the application**
@@ -429,11 +462,12 @@ pytest --cov=betting --cov-report=html
 ### Continuous Integration
 
 The project uses GitHub Actions for automated testing:
-- ✅ Test suite on Python 3.11 & 3.12
+- ✅ Test suite on Python 3.12 (matrix testing)
 - ✅ Code quality checks (flake8, black, isort)
 - ✅ Security scanning (safety, bandit)
 - ✅ Integration tests
 - ✅ Performance tests
+- ✅ Docker image builds and registry pushes
 - ✅ Code coverage reports
 
 ### Code Quality
@@ -499,19 +533,21 @@ Clear browser cookies and cache, then try logging in again.
 This project uses GitHub Actions for continuous integration and deployment. The pipeline includes:
 
 ### Workflow Jobs
-- **Test Suite** - Runs unit and integration tests on Python 3.11, 3.12, and 3.14
+- **Test Suite** - Runs unit and integration tests on Python 3.12 (matrix testing)
 - **Code Quality** - Linting with flake8, formatting with black, import sorting with isort
 - **Security Scan** - Vulnerability scanning with safety and bandit
 - **Build Check** - Validates deployment readiness and static file collection
 - **Integration Tests** - End-to-end workflow testing with seed data and race scoring
 - **Performance Tests** - Database query performance analysis
+- **Docker Build** - Automated Docker image builds and pushes to GitHub Container Registry
 
 ### Status Badges
 The badges at the top of this README show:
 - **CI/CD Pipeline** - Overall workflow status (click to view details)
 - **Code Coverage** - Test coverage percentage from Codecov
-- **Python Versions** - Supported Python versions (3.11, 3.12, 3.14)
-- **Django Version** - Current Django framework version
+- **Python Version** - Python 3.11+ supported
+- **Django Version** - Current Django framework version (5.2.9)
+- **Docker** - Docker-ready indicator
 - **License** - Project license (MIT)
 - **F1 Racing** - Theme indicator
 
