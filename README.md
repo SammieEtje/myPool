@@ -72,6 +72,8 @@ docker-compose exec web python manage.py createsuperuser
 # API: http://localhost:8000/api/
 ```
 
+**Troubleshooting:** If you have issues creating a superuser in Docker, see the [Docker Superuser Tutorial](DOCKER_SUPERUSER_TUTORIAL.md) for detailed step-by-step instructions.
+
 See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed Docker deployment instructions.
 
 ### Option 2: Local Development (Traditional)
