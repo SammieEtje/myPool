@@ -512,6 +512,19 @@ Install all development and testing dependencies:
 pip install -r requirements-dev.txt
 ```
 
+### Claude Code Setup (Optional)
+
+If you're using Claude Code for development assistance:
+
+1. **Copy the example settings file:**
+```bash
+cp .claude/settings.example.json .claude/settings.local.json
+```
+
+2. **Customize permissions** in `.claude/settings.local.json` as needed for your workflow.
+
+The `.local.json` file is git-ignored and won't be committed to the repository.
+
 ## Troubleshooting
 
 ### Static files not loading

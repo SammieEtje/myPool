@@ -27,6 +27,8 @@ services:
       dockerfile: Dockerfile
     container_name: f1betting-web
     image: f1betting:${VERSION:-latest}
+    env_file:
+      - .env
     ports:
       - "${PORT:-8000}:8000"
     environment:
