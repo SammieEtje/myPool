@@ -72,6 +72,8 @@ docker-compose exec web python manage.py createsuperuser
 # API: http://localhost:8000/api/
 ```
 
+**Troubleshooting:** If you have issues creating a superuser in Docker, see the [Docker Superuser Tutorial](DOCKER_SUPERUSER_TUTORIAL.md) for detailed step-by-step instructions.
+
 See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed Docker deployment instructions.
 
 ### Option 2: Local Development (Traditional)
@@ -509,6 +511,19 @@ Install all development and testing dependencies:
 ```bash
 pip install -r requirements-dev.txt
 ```
+
+### Claude Code Setup (Optional)
+
+If you're using Claude Code for development assistance:
+
+1. **Copy the example settings file:**
+```bash
+cp .claude/settings.example.json .claude/settings.local.json
+```
+
+2. **Customize permissions** in `.claude/settings.local.json` as needed for your workflow.
+
+The `.local.json` file is git-ignored and won't be committed to the repository.
 
 ## Troubleshooting
 

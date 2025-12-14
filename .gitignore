@@ -64,3 +64,6 @@ coverage/
 # Cache
 .cache/
 *.tsbuildinfo
+
+# Claude Code
+.claude/settings.local.json
