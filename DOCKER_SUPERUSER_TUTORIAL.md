@@ -9,8 +9,14 @@ This tutorial shows you how to create a Django superuser account for your F1 Bet
 
 ## Step 1: Verify Containers Are Running
 
-First, make sure your Docker containers are up and running:
+First, make sure your Docker containers are up and running.
 
+**For Windows PowerShell:**
+```powershell
+docker-compose --env-file .env ps
+```
+
+**For Git Bash / WSL / Linux / macOS:**
 ```bash
 set -a && source .env && set +a && docker-compose ps
 ```
@@ -21,6 +27,10 @@ NAME            STATUS
 f1betting-db    Up X seconds (healthy)
 f1betting-web   Up X seconds (healthy)
 ```
+
+**Note:** If containers aren't running, start them with:
+- **Windows PowerShell:** `docker-compose --env-file .env up -d`
+- **Git Bash / Linux / macOS:** `set -a && source .env && set +a && docker-compose up -d`
 
 ## Step 2: Access the Container Shell
 
