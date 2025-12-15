@@ -29,7 +29,7 @@ locust==2.42.6
 
 # Debugging
 ipdb==0.13.13
-django-debug-toolbar==4.2.0
+django-debug-toolbar==6.1.0
 
 # Documentation
 sphinx==9.0.4
