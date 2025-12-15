@@ -150,7 +150,13 @@ const app = {
 
     const joinBtn = card.querySelector('.btn-join-competition');
     joinBtn.dataset.competitionId = competition.id;
-    joinBtn.addEventListener('click', () => this.joinCompetition(competition.id));
+
+    // Only show join button if competition is published or active
+    if (competition.status === 'completed' || competition.status === 'draft') {
+      joinBtn.style.display = 'none';
+    } else {
+      joinBtn.addEventListener('click', () => this.joinCompetition(competition.id));
+    }
 
     const viewBtn = card.querySelector('.btn-view-competition');
     viewBtn.dataset.competitionId = competition.id;
