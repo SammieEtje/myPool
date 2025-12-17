@@ -141,6 +141,85 @@
         </div>
     </template>
 
+    <!-- Place Bet Page Template -->
+    <template id="template-place-bet">
+        <div class="page-header">
+            <button class="btn btn-ghost" onclick="app.loadPage('races')" style="margin-bottom: 1rem;">
+                ← Back to Races
+            </button>
+            <h1 class="page-title" id="betRaceName"></h1>
+            <p class="page-subtitle" id="betRaceDetails"></p>
+        </div>
+
+        <div class="betting-layout">
+            <!-- Available Drivers -->
+            <div class="betting-section">
+                <h2 class="section-title">Available Drivers</h2>
+                <p class="text-muted mb-md">Click or drag drivers to add them to your top 10</p>
+                <div id="availableDriversList" class="drivers-list">
+                    <!-- Available drivers will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Top 10 Predictions -->
+            <div class="betting-section">
+                <h2 class="section-title">Your Top 10 Predictions</h2>
+                <p class="text-muted mb-md">Drag to reorder your predictions</p>
+                <div id="top10PredictionsList" class="predictions-list">
+                    <div class="prediction-slot" data-position="1">
+                        <span class="position-number">P1</span>
+                        <span class="empty-text">Drop driver here for 1st place</span>
+                    </div>
+                    <div class="prediction-slot" data-position="2">
+                        <span class="position-number">P2</span>
+                        <span class="empty-text">Drop driver here for 2nd place</span>
+                    </div>
+                    <div class="prediction-slot" data-position="3">
+                        <span class="position-number">P3</span>
+                        <span class="empty-text">Drop driver here for 3rd place</span>
+                    </div>
+                    <div class="prediction-slot" data-position="4">
+                        <span class="position-number">P4</span>
+                        <span class="empty-text">Drop driver here for 4th place</span>
+                    </div>
+                    <div class="prediction-slot" data-position="5">
+                        <span class="position-number">P5</span>
+                        <span class="empty-text">Drop driver here for 5th place</span>
+                    </div>
+                    <div class="prediction-slot" data-position="6">
+                        <span class="position-number">P6</span>
+                        <span class="empty-text">Drop driver here for 6th place</span>
+                    </div>
+                    <div class="prediction-slot" data-position="7">
+                        <span class="position-number">P7</span>
+                        <span class="empty-text">Drop driver here for 7th place</span>
+                    </div>
+                    <div class="prediction-slot" data-position="8">
+                        <span class="position-number">P8</span>
+                        <span class="empty-text">Drop driver here for 8th place</span>
+                    </div>
+                    <div class="prediction-slot" data-position="9">
+                        <span class="position-number">P9</span>
+                        <span class="empty-text">Drop driver here for 9th place</span>
+                    </div>
+                    <div class="prediction-slot" data-position="10">
+                        <span class="position-number">P10</span>
+                        <span class="empty-text">Drop driver here for 10th place</span>
+                    </div>
+                </div>
+
+                <div class="bet-actions">
+                    <button class="btn btn-primary btn-lg" id="submitBetBtn" onclick="app.submitBet()">
+                        Submit Bet
+                    </button>
+                    <button class="btn btn-ghost" onclick="app.clearPredictions()">
+                        Clear All
+                    </button>
+                </div>
+            </div>
+        </div>
+    </template>
+
     <!-- Race Card Template -->
     <template id="template-race-card">
         <div class="card card-race race-card">
