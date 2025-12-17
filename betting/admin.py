@@ -143,7 +143,16 @@ class DriverAdmin(admin.ModelAdmin):
 
 @admin.register(Race, site=admin_site)
 class RaceAdmin(admin.ModelAdmin):
-    list_display = ("round_number", "name", "competition", "country", "race_datetime", "betting_deadline", "status", "admin_actions")
+    list_display = (
+        "round_number",
+        "name",
+        "competition",
+        "country",
+        "race_datetime",
+        "betting_deadline",
+        "status",
+        "admin_actions",
+    )
     list_filter = ("status", "competition", "country")
     search_fields = ("name", "location", "country")
     ordering = ("competition", "round_number")
@@ -159,14 +168,13 @@ class RaceAdmin(admin.ModelAdmin):
         from django.urls import reverse
         from django.utils.html import format_html
 
-        edit_url = reverse('admin:betting_race_change', args=[obj.pk])
-        delete_url = reverse('admin:betting_race_delete', args=[obj.pk])
+        edit_url = reverse("admin:betting_race_change", args=[obj.pk])
+        delete_url = reverse("admin:betting_race_delete", args=[obj.pk])
 
         return format_html(
-            '<a href="{}" title="Edit" style="margin-right: 10px;">⚙️</a>'
-            '<a href="{}" title="Delete">🗑️</a>',
+            '<a href="{}" title="Edit" style="margin-right: 10px;">⚙️</a>' '<a href="{}" title="Delete">🗑️</a>',
             edit_url,
-            delete_url
+            delete_url,
         )
 
     admin_actions.short_description = "Actions"

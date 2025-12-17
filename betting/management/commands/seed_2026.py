@@ -246,7 +246,9 @@ def create_drivers(drivers_data, clear_existing=False, stdout=None):
                 driver.team = driver_data["team"]
                 driver.save()
                 if stdout:
-                    stdout.write(f"Updated driver team: #{driver.driver_number} {driver.first_name} {driver.last_name} -> {driver.team}")
+                    stdout.write(
+                        f"Updated driver team: #{driver.driver_number} {driver.first_name} {driver.last_name} -> {driver.team}"
+                    )
 
 
 def create_competition(admin_user, stdout=None):
