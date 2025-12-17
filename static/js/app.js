@@ -223,13 +223,32 @@ const app = {
     loading.classList.remove('hidden');
 
     try {
-      const response = await fetch('/api/races/?upcoming=true', {
-        credentials: 'include'
-      });
+      // Fetch races and user's bets in parallel
+      const [racesResponse, betsResponse] = await Promise.all([
+        fetch('/api/races/?upcoming=true', { credentials: 'include' }),
+        this.currentUser ? fetch('/api/bets/my_bets/', { credentials: 'include' }) : Promise.resolve(null)
+      ]);
 
-      if (response.ok) {
-        const data = await response.json();
-        const races = Array.isArray(data) ? data : (data.results || []);
+      if (racesResponse.ok) {
+        const racesData = await racesResponse.json();
+        const races = Array.isArray(racesData) ? racesData : (racesData.results || []);
+
+        // Get user's bets
+        let userBets = [];
+        if (betsResponse && betsResponse.ok) {
+          const betsData = await betsResponse.json();
+          userBets = Array.isArray(betsData) ? betsData : (betsData.results || []);
+        }
+
+        // Create a map of race_id -> bet for quick lookup
+        const betsByRace = {};
+        userBets.forEach(bet => {
+          if (!betsByRace[bet.race]) {
+            betsByRace[bet.race] = [];
+          }
+          betsByRace[bet.race].push(bet);
+        });
+
         loading.classList.add('hidden');
 
         if (races.length === 0) {
@@ -237,6 +256,7 @@ const app = {
         } else {
           list.innerHTML = '';
           races.forEach(race => {
+            race.user_has_bet = !!betsByRace[race.id];
             const card = this.createRaceCard(race);
             list.appendChild(card);
           });
@@ -273,11 +293,30 @@ const app = {
 
     const betBtn = card.querySelector('.btn-place-bet');
     betBtn.dataset.raceId = race.id;
-    if (race.is_betting_open && this.currentUser) {
-      betBtn.addEventListener('click', () => this.openBettingModal(race));
-    } else {
+
+    if (!this.currentUser) {
+      // Not logged in
       betBtn.disabled = true;
-      betBtn.textContent = race.is_betting_open ? 'Login to Bet' : 'Betting Closed';
+      betBtn.textContent = 'Login to Bet';
+    } else if (race.user_has_bet && !race.is_betting_open) {
+      // User has bet and betting is closed
+      betBtn.disabled = true;
+      betBtn.textContent = 'Bet Fixed';
+      betBtn.classList.remove('btn-primary');
+      betBtn.classList.add('btn-success');
+    } else if (race.user_has_bet && race.is_betting_open) {
+      // User has bet and can still change it
+      betBtn.textContent = 'Change Bet';
+      betBtn.classList.add('btn-secondary');
+      betBtn.addEventListener('click', () => this.loadBettingPage(race));
+    } else if (race.is_betting_open) {
+      // No bet yet, betting is open
+      betBtn.textContent = 'Place Bet';
+      betBtn.addEventListener('click', () => this.loadBettingPage(race));
+    } else {
+      // Betting is closed, no bet placed
+      betBtn.disabled = true;
+      betBtn.textContent = 'Betting Closed';
     }
 
     const resultsBtn = card.querySelector('.btn-view-results');
@@ -442,43 +481,271 @@ const app = {
     }
   },
 
-  // Open betting modal
-  async openBettingModal(race) {
+  // Load betting page
+  async loadBettingPage(race) {
     if (!this.currentUser) {
       alert('Please login to place bets');
       window.location.href = '/accounts/login/';
       return;
     }
 
-    this.selectedDrivers = [];
     this.currentRace = race;
+    this.selectedDrivers = [];
+    this.predictions = Array(10).fill(null);
 
     // Load drivers if not already loaded
     if (this.drivers.length === 0) {
       await this.loadDrivers();
     }
 
-    const template = document.getElementById('template-betting-modal');
-    const modal = template.content.cloneNode(true);
-    document.body.appendChild(modal);
+    // Load the template
+    const template = document.getElementById('template-place-bet');
+    const pageContent = template.content.cloneNode(true);
+    const appContent = document.getElementById('appContent');
+    appContent.innerHTML = '';
+    appContent.appendChild(pageContent);
 
-    document.querySelector('.race-modal-name').textContent = race.name;
+    // Set race details
+    document.getElementById('betRaceName').textContent = race.name;
+    document.getElementById('betRaceDetails').textContent = `${race.location}, ${race.country} • ${new Date(race.race_datetime).toLocaleDateString()}`;
 
-    const driverSelector = document.getElementById('driverSelector');
+    // Load available drivers
+    this.loadAvailableDrivers();
+
+    // Setup drop zones for predictions
+    this.setupDropZones();
+
+    // Load existing bet if user has one
+    if (race.user_has_bet) {
+      await this.loadExistingBet(race.id);
+    }
+
+    // Update active nav
+    this.updateActiveNav('');
+  },
+
+  // Load existing bet for editing
+  async loadExistingBet(raceId) {
+    try {
+      const response = await fetch(`/api/bets/my_bets/?race=${raceId}`, {
+        credentials: 'include'
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const bets = Array.isArray(data) ? data : (data.results || []);
+
+        // Sort bets by position and populate predictions
+        bets.sort((a, b) => a.predicted_position - b.predicted_position);
+
+        bets.forEach(bet => {
+          if (bet.predicted_position >= 1 && bet.predicted_position <= 10) {
+            const driver = this.drivers.find(d => d.id === bet.driver);
+            if (driver) {
+              this.predictions[bet.predicted_position - 1] = driver;
+              this.updatePredictionSlot(bet.predicted_position);
+
+              // Hide the driver from available list
+              const driverCard = document.querySelector(`[data-driver-id="${driver.id}"]`);
+              if (driverCard) driverCard.classList.add('hidden');
+            }
+          }
+        });
+
+        // Update submit button text
+        const submitBtn = document.getElementById('submitBetBtn');
+        if (submitBtn) {
+          submitBtn.textContent = 'Update Bet';
+        }
+      }
+    } catch (error) {
+      console.error('Failed to load existing bet:', error);
+    }
+  },
+
+  // Load available drivers list
+  loadAvailableDrivers() {
+    const driversList = document.getElementById('availableDriversList');
+    driversList.innerHTML = '';
+
     this.drivers.forEach(driver => {
       const driverCard = document.createElement('div');
-      driverCard.className = 'driver-option';
+      driverCard.className = 'driver-card';
+      driverCard.draggable = true;
       driverCard.dataset.driverId = driver.id;
       driverCard.innerHTML = `
-        <div class="driver-number">${driver.driver_number}</div>
-        <div class="driver-info">
-          <div class="driver-name">${driver.first_name} ${driver.last_name}</div>
-          <div class="driver-team">${driver.team}</div>
+        <div class="driver-card-number">#${driver.driver_number}</div>
+        <div class="driver-card-info">
+          <div class="driver-card-name">${driver.first_name} ${driver.last_name}</div>
+          <div class="driver-card-team">${driver.team}</div>
         </div>
       `;
 
-      driverCard.addEventListener('click', () => this.toggleDriver(driver, driverCard));
-      driverSelector.appendChild(driverCard);
+      // Drag events
+      driverCard.addEventListener('dragstart', (e) => this.handleDragStart(e, driver));
+      driverCard.addEventListener('dragend', (e) => this.handleDragEnd(e));
+
+      // Click to add
+      driverCard.addEventListener('click', () => this.addDriverToFirstEmpty(driver, driverCard));
+
+      driversList.appendChild(driverCard);
+    });
+  },
+
+  // Handle drag start
+  handleDragStart(e, driver) {
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('application/json', JSON.stringify(driver));
+    e.target.classList.add('dragging');
+  },
+
+  // Handle drag end
+  handleDragEnd(e) {
+    e.target.classList.remove('dragging');
+  },
+
+  // Add driver to first empty slot
+  addDriverToFirstEmpty(driver, driverCard) {
+    const emptyIndex = this.predictions.findIndex(p => p === null);
+    if (emptyIndex !== -1) {
+      this.addDriverToPrediction(driver, emptyIndex + 1);
+      driverCard.classList.add('hidden');
+    } else {
+      alert('All positions are filled. Remove a driver first.');
+    }
+  },
+
+  // Add driver to prediction slot
+  addDriverToPrediction(driver, position) {
+    const index = position - 1;
+    this.predictions[index] = driver;
+    this.updatePredictionSlot(position);
+    this.setupDropZones();
+  },
+
+  // Update prediction slot UI
+  updatePredictionSlot(position) {
+    const slots = document.querySelectorAll('.prediction-slot');
+    const slot = slots[position - 1];
+    const driver = this.predictions[position - 1];
+
+    if (driver) {
+      slot.classList.add('filled');
+      slot.innerHTML = `
+        <span class="position-number">P${position}</span>
+        <div class="prediction-driver" draggable="true" data-position="${position}">
+          <div class="prediction-driver-number">#${driver.driver_number}</div>
+          <div class="prediction-driver-info">
+            <div class="prediction-driver-name">${driver.first_name} ${driver.last_name}</div>
+            <div class="prediction-driver-team">${driver.team}</div>
+          </div>
+        </div>
+        <button class="remove-driver" onclick="app.removeDriverFromPrediction(${position})">✕</button>
+      `;
+
+      // Add drag events to prediction driver
+      const predictionDriver = slot.querySelector('.prediction-driver');
+      predictionDriver.addEventListener('dragstart', (e) => {
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', position.toString());
+        e.target.style.opacity = '0.5';
+      });
+      predictionDriver.addEventListener('dragend', (e) => {
+        e.target.style.opacity = '1';
+      });
+    } else {
+      slot.classList.remove('filled');
+      const positionText = this.getPositionText(position);
+      slot.innerHTML = `
+        <span class="position-number">P${position}</span>
+        <span class="empty-text">Drop driver here for ${positionText} place</span>
+      `;
+    }
+  },
+
+  // Get position text
+  getPositionText(position) {
+    const suffixes = ['st', 'nd', 'rd'];
+    const suffix = position <= 3 ? suffixes[position - 1] : 'th';
+    return position + suffix;
+  },
+
+  // Setup drop zones
+  setupDropZones() {
+    const slots = document.querySelectorAll('.prediction-slot');
+    slots.forEach((slot, index) => {
+      const position = index + 1;
+
+      slot.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        slot.classList.add('drag-over');
+      });
+
+      slot.addEventListener('dragleave', () => {
+        slot.classList.remove('drag-over');
+      });
+
+      slot.addEventListener('drop', (e) => {
+        e.preventDefault();
+        slot.classList.remove('drag-over');
+
+        // Check if dragging from available drivers or reordering
+        const jsonData = e.dataTransfer.getData('application/json');
+        const positionData = e.dataTransfer.getData('text/plain');
+
+        if (jsonData) {
+          // Dragging from available drivers
+          const driver = JSON.parse(jsonData);
+          // Check if driver already in predictions
+          if (!this.predictions.some(p => p && p.id === driver.id)) {
+            this.addDriverToPrediction(driver, position);
+            // Hide driver card
+            const driverCard = document.querySelector(`[data-driver-id="${driver.id}"]`);
+            if (driverCard) driverCard.classList.add('hidden');
+          }
+        } else if (positionData) {
+          // Reordering predictions
+          const fromPosition = parseInt(positionData);
+          if (fromPosition !== position) {
+            this.swapPredictions(fromPosition, position);
+          }
+        }
+      });
+    });
+  },
+
+  // Swap predictions
+  swapPredictions(fromPos, toPos) {
+    const temp = this.predictions[fromPos - 1];
+    this.predictions[fromPos - 1] = this.predictions[toPos - 1];
+    this.predictions[toPos - 1] = temp;
+    this.updatePredictionSlot(fromPos);
+    this.updatePredictionSlot(toPos);
+  },
+
+  // Remove driver from prediction
+  removeDriverFromPrediction(position) {
+    const driver = this.predictions[position - 1];
+    if (driver) {
+      this.predictions[position - 1] = null;
+      this.updatePredictionSlot(position);
+
+      // Show driver card again
+      const driverCard = document.querySelector(`[data-driver-id="${driver.id}"]`);
+      if (driverCard) driverCard.classList.remove('hidden');
+    }
+  },
+
+  // Clear all predictions
+  clearPredictions() {
+    this.predictions = Array(10).fill(null);
+    for (let i = 1; i <= 10; i++) {
+      this.updatePredictionSlot(i);
+    }
+    // Show all driver cards
+    document.querySelectorAll('.driver-card').forEach(card => {
+      card.classList.remove('hidden');
     });
   },
 
@@ -544,12 +811,14 @@ const app = {
 
   // Submit bet
   async submitBet() {
-    if (this.selectedDrivers.length !== 10) {
-      alert('Please select exactly 10 drivers');
+    // Check if all 10 positions are filled
+    const filledCount = this.predictions.filter(p => p !== null).length;
+    if (filledCount !== 10) {
+      alert(`Please select exactly 10 drivers. You have selected ${filledCount}.`);
       return;
     }
 
-    const predictions = this.selectedDrivers.map((driver, index) => ({
+    const predictionData = this.predictions.map((driver, index) => ({
       driver: driver.id,
       position: index + 1
     }));
@@ -560,13 +829,23 @@ const app = {
         credentials: 'include'
       });
 
-      const betTypes = await betTypesResponse.json();
+      const betTypesData = await betTypesResponse.json();
+      console.log('Bet types response:', betTypesData);
+      const betTypes = Array.isArray(betTypesData) ? betTypesData : (betTypesData.results || []);
       const top10BetType = betTypes.find(bt => bt.code === 'top10');
 
       if (!top10BetType) {
         alert('Bet type not found. Please contact administrator.');
         return;
       }
+
+      const payload = {
+        race: this.currentRace.id,
+        bet_type: top10BetType.id,
+        predictions: predictionData
+      };
+
+      console.log('Submitting bet with payload:', payload);
 
       const response = await fetch('/api/bets/bulk_create/', {
         method: 'POST',
@@ -575,34 +854,34 @@ const app = {
           'Content-Type': 'application/json',
           'X-CSRFToken': this.getCookie('csrftoken')
         },
-        body: JSON.stringify({
-          race: this.currentRace.id,
-          bet_type: top10BetType.id,
-          predictions: predictions
-        })
+        body: JSON.stringify(payload)
       });
 
       if (response.ok) {
         alert('Bet placed successfully!');
-        this.closeBettingModal();
         this.loadPage('my-bets');
       } else {
         const error = await response.json();
-        alert('Failed to place bet: ' + (error.error || 'Unknown error'));
+        console.error('Bet submission error:', error);
+
+        // Build detailed error message
+        let errorMsg = 'Failed to place bet:\n\n';
+        if (error.error) {
+          errorMsg += error.error;
+        } else if (error.detail) {
+          errorMsg += error.detail;
+        } else if (error.non_field_errors) {
+          errorMsg += error.non_field_errors.join('\n');
+        } else {
+          errorMsg += JSON.stringify(error, null, 2);
+        }
+
+        alert(errorMsg);
       }
     } catch (error) {
       console.error('Failed to submit bet:', error);
-      alert('Failed to place bet');
+      alert('Failed to place bet. Please check the console for details.\n\nError: ' + error.message);
     }
-  },
-
-  // Close betting modal
-  closeBettingModal() {
-    const modal = document.getElementById('bettingModal');
-    if (modal) {
-      modal.remove();
-    }
-    this.selectedDrivers = [];
   },
 
   // View race results

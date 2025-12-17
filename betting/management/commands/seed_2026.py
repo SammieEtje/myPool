@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 
-from betting.models import BetType, Competition, Driver, Race
+from betting.models import Competition, Driver, Race
 
 
 def get_2026_drivers():
@@ -220,6 +220,96 @@ def get_2026_schedule():
     return schedule
 
 
+def create_drivers(drivers_data, clear_existing=False, stdout=None):
+    """Create or update 2026 drivers."""
+    if clear_existing:
+        Driver.objects.all().delete()
+        if stdout:
+            stdout.write("Clearing existing drivers...")
+            stdout.write("Drivers cleared")
+    for driver_data in drivers_data:
+        driver, created = Driver.objects.get_or_create(
+            driver_number=driver_data["number"],
+            defaults={
+                "first_name": driver_data["first_name"],
+                "last_name": driver_data["last_name"],
+                "team": driver_data["team"],
+                "nationality": driver_data["nationality"],
+                "is_active": True,
+            },
+        )
+        if created:
+            if stdout:
+                stdout.write(f"Created driver: #{driver.driver_number} {driver.first_name} {driver.last_name}")
+        else:
+            if driver.team != driver_data["team"]:
+                driver.team = driver_data["team"]
+                driver.save()
+                if stdout:
+                    stdout.write(
+                        f"Updated driver team: #{driver.driver_number} {driver.first_name} {driver.last_name} -> {driver.team}"
+                    )
+
+
+def create_competition(admin_user, stdout=None):
+    """Create or get 2026 competition."""
+    competition, created = Competition.objects.get_or_create(
+        year=2026,
+        name="F1 2026 World Championship",
+        defaults={
+            "description": "The 2026 Formula 1 World Championship season - New Era with revolutionary power unit regulations",
+            "status": "published",
+            "start_date": date(2026, 3, 1),
+            "end_date": date(2026, 12, 15),
+            "created_by": admin_user,
+            "points_for_exact_position": 10,
+            "points_for_correct_driver": 5,
+        },
+    )
+    if created:
+        if stdout:
+            stdout.write(f"Created competition: {competition.name}")
+    else:
+        if stdout:
+            stdout.write(f"Competition already exists: {competition.name}")
+    return competition
+
+
+def create_races(competition, schedule_data, stdout=None):
+    """Create 2026 races."""
+    for race_data in schedule_data:
+        race, created = Race.objects.get_or_create(
+            competition=competition,
+            round_number=race_data["round"],
+            defaults={
+                "name": race_data["name"],
+                "location": race_data["location"],
+                "country": race_data["country"],
+                "race_datetime": race_data["race_datetime"],
+                "betting_deadline": race_data["betting_deadline"],
+                "status": "betting_open",
+            },
+        )
+        if created:
+            if stdout:
+                stdout.write(f"Created race: Round {race.round_number} - {race.name}")
+
+
+def print_summary(competition, stdout=None):
+    """Print seeding summary."""
+    if stdout:
+        stdout.write("\n" + "=" * 50)
+        stdout.write("F1 2026 season data seeded successfully!")
+        stdout.write("=" * 50)
+        stdout.write("\n2026 Season Details:")
+        stdout.write(f"  Competition: {competition.name}")
+        stdout.write(f"  Drivers: {Driver.objects.filter(is_active=True).count()}")
+        stdout.write(f"  Races: {Race.objects.filter(competition=competition).count()}")
+        stdout.write(f"  Participants: {competition.participants.count()}")
+        stdout.write("\nNote: Audi F1 Team debuts in 2026 (formerly Kick Sauber)")
+        stdout.write("New power unit regulations take effect this season!")
+
+
 class Command(BaseCommand):
     help = "Seed database with F1 2026 season data"
 
@@ -240,84 +330,22 @@ class Command(BaseCommand):
             self.stdout.write(self.style.ERROR("Admin user not found. Please run seed_data first."))
             return
 
-        # Clear drivers if requested
-        if options["clear_drivers"]:
-            self.stdout.write("Clearing existing drivers...")
-            Driver.objects.all().delete()
-            self.stdout.write(self.style.SUCCESS("Drivers cleared"))
-
-        # Create 2026 drivers
+        # Create drivers
         drivers_data = get_2026_drivers()
-        for driver_data in drivers_data:
-            driver, created = Driver.objects.get_or_create(
-                driver_number=driver_data["number"],
-                defaults={
-                    "first_name": driver_data["first_name"],
-                    "last_name": driver_data["last_name"],
-                    "team": driver_data["team"],
-                    "nationality": driver_data["nationality"],
-                    "is_active": True,
-                },
-            )
-            if created:
-                self.stdout.write(f"Created driver: #{driver.driver_number} {driver.first_name} {driver.last_name}")
-            else:
-                # Update team for 2026 (e.g., Sauber -> Audi)
-                if driver.team != driver_data["team"]:
-                    driver.team = driver_data["team"]
-                    driver.save()
-                    self.stdout.write(f"Updated driver team: #{driver.driver_number} {driver.first_name} {driver.last_name} -> {driver.team}")
+        create_drivers(drivers_data, options["clear_drivers"], self.stdout)
 
-        # Create 2026 competition
-        competition, created = Competition.objects.get_or_create(
-            year=2026,
-            name="F1 2026 World Championship",
-            defaults={
-                "description": "The 2026 Formula 1 World Championship season - New Era with revolutionary power unit regulations",
-                "status": "published",
-                "start_date": date(2026, 3, 1),
-                "end_date": date(2026, 12, 15),
-                "created_by": admin_user,
-                "points_for_exact_position": 10,
-                "points_for_correct_driver": 5,
-            },
-        )
-        if created:
-            self.stdout.write(self.style.SUCCESS(f"Created competition: {competition.name}"))
-        else:
-            self.stdout.write(f"Competition already exists: {competition.name}")
+        # Create competition
+        competition = create_competition(admin_user, self.stdout)
 
-        # Add all test users as participants
+        # Add test users as participants
         test_users = User.objects.filter(username__startswith="testuser")
         if test_users.exists():
             competition.participants.set(test_users)
             self.stdout.write(f"Added {test_users.count()} test users as participants")
 
-        # Create 2026 races
+        # Create races
         schedule_data = get_2026_schedule()
-        for race_data in schedule_data:
-            race, created = Race.objects.get_or_create(
-                competition=competition,
-                round_number=race_data["round"],
-                defaults={
-                    "name": race_data["name"],
-                    "location": race_data["location"],
-                    "country": race_data["country"],
-                    "race_datetime": race_data["race_datetime"],
-                    "betting_deadline": race_data["betting_deadline"],
-                    "status": "betting_open",
-                },
-            )
-            if created:
-                self.stdout.write(f"Created race: Round {race.round_number} - {race.name}")
+        create_races(competition, schedule_data, self.stdout)
 
-        self.stdout.write(self.style.SUCCESS("\n" + "=" * 50))
-        self.stdout.write(self.style.SUCCESS("F1 2026 season data seeded successfully!"))
-        self.stdout.write(self.style.SUCCESS("=" * 50))
-        self.stdout.write("\n2026 Season Details:")
-        self.stdout.write(f"  Competition: {competition.name}")
-        self.stdout.write(f"  Drivers: {Driver.objects.filter(is_active=True).count()}")
-        self.stdout.write(f"  Races: {Race.objects.filter(competition=competition).count()}")
-        self.stdout.write(f"  Participants: {competition.participants.count()}")
-        self.stdout.write("\nNote: Audi F1 Team debuts in 2026 (formerly Kick Sauber)")
-        self.stdout.write("New power unit regulations take effect this season!")
+        # Print summary
+        print_summary(competition, self.stdout)
