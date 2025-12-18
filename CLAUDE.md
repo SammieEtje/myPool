@@ -18,6 +18,14 @@ This is a Django-based F1 betting pool application with a React frontend. The pr
 - **Imports**: Group imports by external libraries, then internal modules
 - **Components**: Use functional components with hooks
 
+### CSS and Styling
+- **Framework**: Use Tailwind CSS for styling
+- **Custom Styles**: Add custom components in `static/css/input.css` using `@layer components`
+- **Build Process**: Run `npm run build:css` to build Tailwind output, or `npm run watch:css` for development
+- **Utility-First**: Prefer Tailwind utility classes over custom CSS
+- **Theme**: Use configured theme colors (primary: F1 Red #DC0000, accent colors for gold/silver/bronze)
+- **Responsive**: Use Tailwind's responsive prefixes (sm:, md:, lg:, xl:)
+
 ### Django Specific
 - **Models**: Use descriptive field names, add help_text and verbose_name
 - **Views**: Use class-based views where appropriate, keep business logic in managers/services
@@ -62,13 +70,28 @@ This is a Django-based F1 betting pool application with a React frontend. The pr
 - **Static Files**: Collect and serve static files properly
 - **Security**: Use HTTPS in production, set secure headers
 
+## Frontend Development Workflow
+1. **Development Mode**: Run `npm run watch:css` to auto-rebuild Tailwind CSS on file changes
+2. **Production Build**: Run `npm run build:css` before deploying to generate minified CSS
+3. **Template Changes**: Tailwind will automatically detect utility classes in templates
+4. **Custom Components**: Add reusable component styles in `static/css/input.css`
+
 ## File Structure
 ```
 myPool/
 ├── betting/          # Main Django app
 ├── f1betting/        # Django project settings
-├── static/           # Static files (CSS, JS)
+├── static/           # Static files
+│   ├── css/
+│   │   ├── input.css      # Tailwind input file (edit this)
+│   │   ├── output.css     # Tailwind output file (generated)
+│   │   ├── design-system.css  # Legacy CSS
+│   │   └── main.css       # Legacy CSS
+│   └── js/           # JavaScript files
 ├── templates/        # HTML templates
+├── node_modules/     # Node dependencies (gitignored)
+├── package.json      # Node dependencies config
+├── tailwind.config.js  # Tailwind configuration
 ├── requirements.txt  # Python dependencies
 └── Dockerfile        # Container configuration
 ```
