@@ -16,69 +16,240 @@ To build minified CSS for production:
 npm run build:css
 ```
 
-## Configuration
+## Color Palette
 
-### Theme Colors
-The project uses F1-themed colors configured in `tailwind.config.js`:
+The project uses a modern color palette from [Coolors](https://coolors.co/c4d6b0-477998-291f1e-f64740-a3333d):
 
-- **Primary**: `#DC0000` (F1 Red) - Use with `bg-primary`, `text-primary`, `border-primary`
-- **Secondary**: `#15151E` (Dark background) - Use with `bg-secondary`
-- **Accent Colors**:
-  - Gold: `#FFD700` - Use with `bg-accent-gold`
-  - Silver: `#C0C0C0` - Use with `bg-accent-silver`
-  - Bronze: `#CD7F32` - Use with `bg-accent-bronze`
+### Main Colors
+- **Primary**: `#F64740` (Red Salsa) - Main action color
+  - Classes: `bg-primary`, `text-primary`, `border-primary`
+  - Usage: Primary buttons, CTAs, important highlights
+
+- **Primary Dark**: `#A3333D` (Upsdell Red) - Darker variant
+  - Classes: `bg-primary-dark`, `text-primary-dark`
+  - Usage: Hover states, warnings, danger states
+
+- **Secondary**: `#477998` (Queen Blue) - Secondary elements
+  - Classes: `bg-secondary`, `text-secondary`
+  - Usage: Secondary buttons, info states, accents
+
+- **Dark**: `#291F1E` (Licorice) - Dark backgrounds
+  - Classes: `bg-dark`, `text-dark`
+  - Usage: Main background, dark sections
+
+- **Light**: `#C4D6B0` (Tea Green) - Light accents
+  - Classes: `bg-light`, `text-light`
+  - Usage: Success states, highlights, light accents
+
+### Semantic Colors
+- **Success**: `#C4D6B0` (Tea Green) - `bg-success`, `text-success`
+- **Info**: `#477998` (Queen Blue) - `bg-info`, `text-info`
+- **Warning**: `#F64740` (Red Salsa) - `bg-warning`, `text-warning`
+- **Danger**: `#A3333D` (Upsdell Red) - `bg-danger`, `text-danger`
+
+### Podium Colors (F1 Theme)
+- **Gold**: `#FFD700` - `bg-podium-gold`, `text-podium-gold`
+- **Silver**: `#C0C0C0` - `bg-podium-silver`, `text-podium-silver`
+- **Bronze**: `#CD7F32` - `bg-podium-bronze`, `text-podium-bronze`
+
+### Gradients
+```html
+<!-- Use background-image utilities -->
+<div class="bg-gradient-primary">Gradient from primary to primary-dark</div>
+<div class="bg-gradient-secondary">Gradient from secondary to light</div>
+
+<!-- Or use text gradients -->
+<h1 class="text-gradient-primary">Primary gradient text</h1>
+<h1 class="text-gradient-secondary">Secondary gradient text</h1>
+```
 
 ### Fonts
-- **Sans**: Inter (default)
-- **Display**: Rajdhani (for headings)
+- **Sans**: Inter (default) - Body text
+- **Display**: Rajdhani - Headings and display text
 
-Use `font-display` class for display font: `<h1 class="font-display">Title</h1>`
+Use `font-display` class for display font: `<h1 class="font-display font-black">Title</h1>`
 
 ## Custom Components
 
 The following custom component classes are available in `static/css/input.css`:
 
 ### Buttons
-- `btn-primary` - Primary button (red background)
-- `btn-secondary` - Secondary button (gray background)
-- `btn-outline` - Outline button (red border)
-
-Example:
 ```html
-<button class="btn-primary">Join Competition</button>
-<button class="btn-outline">View Details</button>
+<!-- Base button with variants -->
+<button class="btn btn-primary">Primary Action</button>
+<button class="btn btn-secondary">Secondary Action</button>
+<button class="btn btn-outline">Outlined Button</button>
+<button class="btn btn-ghost">Ghost Button</button>
+
+<!-- Sizes -->
+<button class="btn btn-primary btn-sm">Small Button</button>
+<button class="btn btn-primary">Default Button</button>
+<button class="btn btn-primary btn-lg">Large Button</button>
 ```
 
-### Cards
-- `card` - Standard card component
+**Available Classes:**
+- `btn` - Base button class (always required)
+- `btn-primary` - Primary action button (coral red with hover effects)
+- `btn-secondary` - Secondary button (blue grey)
+- `btn-outline` - Outlined button
+- `btn-ghost` - Minimal button
+- `btn-sm` - Small size
+- `btn-lg` - Large size
 
-Example:
+### Cards
 ```html
+<!-- Basic card -->
 <div class="card">
-  <h3>Card Title</h3>
-  <p>Card content</p>
+  <div class="card-body">
+    <h3 class="card-title">Card Title</h3>
+    <p>Card content goes here</p>
+  </div>
+</div>
+
+<!-- Card with header and footer -->
+<div class="card">
+  <div class="card-header">
+    <h3>Header Title</h3>
+  </div>
+  <div class="card-body">
+    <p>Main content</p>
+  </div>
+  <div class="card-footer">
+    <button class="btn btn-primary">Action</button>
+  </div>
+</div>
+
+<!-- Competition card -->
+<div class="competition-card">
+  <div class="card-body">
+    <div class="competition-card-year">2024</div>
+    <h3 class="card-title">Season Championship</h3>
+    <div class="competition-card-stats">
+      <div class="stat">
+        <div class="stat-value">24</div>
+        <div class="stat-label">Races</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">156</div>
+        <div class="stat-label">Participants</div>
+      </div>
+    </div>
+  </div>
 </div>
 ```
 
 ### Forms
-- `input-field` - Styled form input
-
-Example:
 ```html
-<input type="text" class="input-field" placeholder="Enter email">
+<!-- Form group with label and input -->
+<div class="form-group">
+  <label class="form-label">Email Address</label>
+  <input type="email" class="form-input" placeholder="your@email.com">
+</div>
+
+<!-- Textarea -->
+<div class="form-group">
+  <label class="form-label">Message</label>
+  <textarea class="form-textarea" rows="4" placeholder="Your message"></textarea>
+</div>
+
+<!-- Select -->
+<div class="form-group">
+  <label class="form-label">Competition</label>
+  <select class="form-select">
+    <option>2024 Season</option>
+    <option>2023 Season</option>
+  </select>
+</div>
+
+<!-- Checkbox -->
+<label class="flex items-center gap-2">
+  <input type="checkbox" class="form-checkbox">
+  <span>Remember me</span>
+</label>
 ```
 
 ### Badges
-- `badge` - Base badge style
-- `badge-primary` - Red badge
-- `badge-success` - Green badge
-- `badge-warning` - Yellow badge
-- `badge-error` - Red error badge
-
-Example:
 ```html
-<span class="badge badge-success">Active</span>
-<span class="badge badge-warning">Pending</span>
+<span class="badge badge-primary">Primary</span>
+<span class="badge badge-secondary">Secondary</span>
+<span class="badge badge-success">Success</span>
+<span class="badge badge-warning">Warning</span>
+<span class="badge badge-danger">Danger</span>
+```
+
+### Navigation
+```html
+<nav class="navbar">
+  <div class="container py-4">
+    <div class="navbar-brand">
+      <div>🏎️</div>
+      <span>F1 Betting Pool</span>
+    </div>
+    <ul class="navbar-nav">
+      <li><a href="#" class="nav-link active">Competitions</a></li>
+      <li><a href="#" class="nav-link">Races</a></li>
+      <li><a href="#" class="nav-link">Leaderboard</a></li>
+    </ul>
+  </div>
+</nav>
+```
+
+### Page Headers
+```html
+<div class="page-header">
+  <h1 class="page-title">Active Competitions</h1>
+  <p class="page-subtitle">Join a competition and start predicting race results</p>
+</div>
+```
+
+### Leaderboard
+```html
+<div class="leaderboard-item">
+  <div class="leaderboard-rank">1</div>
+  <div class="leaderboard-user">
+    <div class="leaderboard-name">John Doe</div>
+    <div class="leaderboard-stats">
+      <span>12 exact predictions</span>
+      <span>•</span>
+      <span>24 races predicted</span>
+    </div>
+  </div>
+  <div class="leaderboard-points">486</div>
+</div>
+```
+
+### Modals
+```html
+<div class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 class="modal-title">Modal Title</h2>
+      <button class="modal-close">&times;</button>
+    </div>
+    <div class="modal-body">
+      <p>Modal content goes here</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost">Cancel</button>
+      <button class="btn btn-primary">Confirm</button>
+    </div>
+  </div>
+</div>
+```
+
+### Loading & Empty States
+```html
+<!-- Loading spinner -->
+<div class="loading">
+  <div class="spinner"></div>
+</div>
+
+<!-- Empty state -->
+<div class="empty-state">
+  <div class="empty-state-icon">🏆</div>
+  <h3>No competitions available</h3>
+  <p>Check back later for new competitions</p>
+</div>
 ```
 
 ## Using Tailwind in Templates

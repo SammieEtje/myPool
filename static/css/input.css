@@ -2,65 +2,502 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Custom CSS can be added here */
-
-/* F1 Themed Custom Styles */
-@layer components {
-  .btn-primary {
-    @apply bg-primary hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition-colors;
+/* ============================================
+   BASE STYLES
+   ============================================ */
+@layer base {
+  body {
+    @apply bg-dark text-gray-100 font-sans antialiased;
   }
 
-  .btn-secondary {
-    @apply bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded transition-colors;
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display font-bold;
   }
 
-  .btn-outline {
-    @apply border-2 border-primary text-primary hover:bg-primary hover:text-white font-bold py-2 px-4 rounded transition-colors;
+  h1 {
+    @apply text-4xl md:text-5xl lg:text-6xl;
   }
 
-  .card {
-    @apply bg-gray-800 rounded-lg shadow-lg p-6 border border-gray-700 hover:border-primary transition-colors;
+  h2 {
+    @apply text-3xl md:text-4xl lg:text-5xl;
   }
 
-  .input-field {
-    @apply w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent;
+  h3 {
+    @apply text-2xl md:text-3xl;
   }
 
-  .badge {
-    @apply inline-block px-3 py-1 text-xs font-semibold rounded-full;
-  }
-
-  .badge-primary {
-    @apply bg-primary text-white;
-  }
-
-  .badge-success {
-    @apply bg-green-600 text-white;
-  }
-
-  .badge-warning {
-    @apply bg-yellow-600 text-white;
-  }
-
-  .badge-error {
-    @apply bg-red-600 text-white;
+  a {
+    @apply transition-colors duration-200;
   }
 }
 
-/* Custom animations */
+/* ============================================
+   COMPONENT STYLES
+   ============================================ */
+@layer components {
+  /* Container */
+  .container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Buttons */
+  .btn {
+    @apply inline-flex items-center justify-center px-6 py-3 rounded-lg font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-dark disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-primary {
+    @apply bg-primary hover:bg-primary-dark text-white focus:ring-primary shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 hover:-translate-y-0.5;
+  }
+
+  .btn-secondary {
+    @apply bg-secondary hover:bg-secondary/90 text-white focus:ring-secondary shadow-lg shadow-secondary/20;
+  }
+
+  .btn-outline {
+    @apply border-2 border-primary text-primary hover:bg-primary hover:text-white focus:ring-primary;
+  }
+
+  .btn-ghost {
+    @apply text-gray-300 hover:text-white hover:bg-gray-800 focus:ring-gray-500;
+  }
+
+  .btn-sm {
+    @apply px-4 py-2 text-sm;
+  }
+
+  .btn-lg {
+    @apply px-8 py-4 text-lg;
+  }
+
+  /* Cards */
+  .card {
+    @apply bg-gray-900 rounded-xl shadow-xl border border-gray-800 overflow-hidden transition-all duration-300 hover:shadow-2xl hover:border-secondary/50;
+  }
+
+  .card-body {
+    @apply p-6;
+  }
+
+  .card-header {
+    @apply px-6 pt-6 pb-4 border-b border-gray-800;
+  }
+
+  .card-footer {
+    @apply px-6 pb-6 pt-4 border-t border-gray-800 flex gap-3 justify-end;
+  }
+
+  .card-title {
+    @apply text-2xl font-display font-bold mb-2;
+  }
+
+  /* Form Elements */
+  .form-group {
+    @apply mb-6;
+  }
+
+  .form-label {
+    @apply block text-sm font-semibold text-gray-300 mb-2;
+  }
+
+  .form-input,
+  .form-select,
+  .form-textarea {
+    @apply w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent hover:border-gray-600;
+  }
+
+  .form-textarea {
+    @apply resize-none;
+  }
+
+  .form-checkbox,
+  .form-radio {
+    @apply w-5 h-5 text-primary bg-gray-900 border-gray-700 rounded focus:ring-2 focus:ring-primary focus:ring-offset-dark cursor-pointer;
+  }
+
+  /* Badges */
+  .badge {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold;
+  }
+
+  .badge-primary {
+    @apply bg-primary/20 text-primary border border-primary/30;
+  }
+
+  .badge-secondary {
+    @apply bg-secondary/20 text-secondary border border-secondary/30;
+  }
+
+  .badge-success {
+    @apply bg-success/20 text-success border border-success/30;
+  }
+
+  .badge-warning {
+    @apply bg-warning/20 text-warning border border-warning/30;
+  }
+
+  .badge-danger {
+    @apply bg-danger/20 text-danger border border-danger/30;
+  }
+
+  /* Navigation */
+  .navbar {
+    @apply sticky top-0 z-50 bg-gray-900/95 backdrop-blur-sm border-b-2 border-primary shadow-lg;
+  }
+
+  .navbar-brand {
+    @apply flex items-center gap-3 font-display text-2xl font-black text-white uppercase tracking-wide;
+  }
+
+  .navbar-nav {
+    @apply flex gap-2;
+  }
+
+  .nav-link {
+    @apply px-4 py-2 rounded-lg text-gray-300 font-semibold hover:text-white hover:bg-gray-800 transition-all duration-200;
+  }
+
+  .nav-link.active {
+    @apply text-white bg-gray-800 border-b-2 border-primary;
+  }
+
+  /* Page Header */
+  .page-header {
+    @apply text-center mb-12;
+  }
+
+  .page-title {
+    @apply text-5xl md:text-6xl font-display font-black mb-4 bg-gradient-to-r from-primary via-light to-secondary bg-clip-text text-transparent;
+  }
+
+  .page-subtitle {
+    @apply text-lg md:text-xl text-gray-400;
+  }
+
+  /* Grids */
+  .grid-cols-auto {
+    @apply grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3;
+  }
+
+  /* Competition Card */
+  .competition-card {
+    @apply card relative hover:scale-105;
+  }
+
+  .competition-card-year {
+    @apply text-4xl font-black text-primary mb-3;
+  }
+
+  .competition-card-stats {
+    @apply flex gap-6 mt-4;
+  }
+
+  .stat {
+    @apply flex flex-col;
+  }
+
+  .stat-value {
+    @apply text-3xl font-black text-secondary;
+  }
+
+  .stat-label {
+    @apply text-xs text-gray-500 uppercase tracking-wider font-semibold;
+  }
+
+  /* Race Card */
+  .race-card {
+    @apply card border-l-4;
+  }
+
+  .race-card.betting-open {
+    @apply border-l-success;
+  }
+
+  .race-card.betting-closed {
+    @apply border-l-danger;
+  }
+
+  .race-card-header {
+    @apply flex justify-between items-start mb-4;
+  }
+
+  .race-round {
+    @apply text-xs text-gray-500 uppercase font-bold tracking-wider;
+  }
+
+  .race-name {
+    @apply text-xl font-bold my-2;
+  }
+
+  .race-location {
+    @apply text-gray-400 text-sm;
+  }
+
+  /* Leaderboard */
+  .leaderboard-item {
+    @apply flex items-center gap-4 p-4 bg-gray-900 rounded-lg mb-2 transition-all duration-200 hover:bg-gray-800 hover:translate-x-1 border border-gray-800;
+  }
+
+  .leaderboard-rank {
+    @apply text-3xl font-black min-w-[60px] text-center;
+  }
+
+  .leaderboard-item:nth-child(1) .leaderboard-rank {
+    @apply text-podium-gold;
+  }
+
+  .leaderboard-item:nth-child(2) .leaderboard-rank {
+    @apply text-podium-silver;
+  }
+
+  .leaderboard-item:nth-child(3) .leaderboard-rank {
+    @apply text-podium-bronze;
+  }
+
+  .leaderboard-user {
+    @apply flex-1;
+  }
+
+  .leaderboard-name {
+    @apply font-bold text-lg mb-1;
+  }
+
+  .leaderboard-stats {
+    @apply flex gap-3 text-sm text-gray-500;
+  }
+
+  .leaderboard-points {
+    @apply text-2xl font-black text-secondary;
+  }
+
+  /* Modal */
+  .modal-overlay {
+    @apply fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4;
+  }
+
+  .modal {
+    @apply bg-gray-900 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-gray-800;
+  }
+
+  .modal-header {
+    @apply px-6 py-5 border-b border-gray-800 flex justify-between items-center sticky top-0 bg-gray-900 z-10;
+  }
+
+  .modal-title {
+    @apply text-2xl font-display font-bold;
+  }
+
+  .modal-close {
+    @apply text-gray-400 hover:text-white text-3xl w-10 h-10 flex items-center justify-center rounded-lg hover:bg-gray-800 transition-colors;
+  }
+
+  .modal-body {
+    @apply p-6;
+  }
+
+  .modal-footer {
+    @apply px-6 py-5 border-t border-gray-800 flex gap-3 justify-end sticky bottom-0 bg-gray-900;
+  }
+
+  /* Loading States */
+  .loading {
+    @apply flex items-center justify-center p-12;
+  }
+
+  .spinner {
+    @apply w-12 h-12 border-4 border-gray-700 border-t-primary rounded-full animate-spin;
+  }
+
+  /* Empty States */
+  .empty-state {
+    @apply text-center py-16 px-4;
+  }
+
+  .empty-state-icon {
+    @apply text-6xl opacity-30 mb-6;
+  }
+
+  .empty-state h3 {
+    @apply text-xl font-bold text-gray-400 mb-3;
+  }
+
+  .empty-state p {
+    @apply text-gray-500;
+  }
+
+  /* Driver Card (Betting) */
+  .driver-card {
+    @apply bg-gray-900 border-2 border-gray-800 rounded-lg p-4 cursor-grab transition-all duration-200 flex items-center gap-3 hover:border-primary hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/20;
+  }
+
+  .driver-card.dragging {
+    @apply opacity-50 cursor-grabbing;
+  }
+
+  .driver-card-number {
+    @apply text-2xl font-black text-primary min-w-[50px] text-center;
+  }
+
+  .driver-card-info {
+    @apply flex-1;
+  }
+
+  .driver-card-name {
+    @apply font-bold text-white mb-1;
+  }
+
+  .driver-card-team {
+    @apply text-sm text-gray-400;
+  }
+
+  /* Prediction Slot */
+  .prediction-slot {
+    @apply bg-gray-900 border-2 border-dashed border-gray-700 rounded-lg p-4 min-h-[70px] flex items-center gap-3 transition-all duration-200;
+  }
+
+  .prediction-slot.drag-over {
+    @apply border-primary bg-primary/10 border-solid;
+  }
+
+  .prediction-slot.filled {
+    @apply border-solid border-secondary bg-gray-800;
+  }
+
+  .position-number {
+    @apply text-xl font-black min-w-[50px];
+  }
+
+  .prediction-slot[data-position="1"] .position-number {
+    @apply text-podium-gold;
+  }
+
+  .prediction-slot[data-position="2"] .position-number {
+    @apply text-podium-silver;
+  }
+
+  .prediction-slot[data-position="3"] .position-number {
+    @apply text-podium-bronze;
+  }
+
+  /* Auth Pages */
+  .auth-container {
+    @apply min-h-screen flex items-center justify-center bg-dark p-4;
+  }
+
+  .auth-box {
+    @apply bg-gray-900 rounded-2xl shadow-2xl w-full max-w-md p-8 border-t-4 border-primary;
+  }
+
+  .auth-header {
+    @apply text-center mb-8;
+  }
+
+  .auth-logo {
+    @apply text-5xl mb-4;
+  }
+
+  .auth-title {
+    @apply font-display text-4xl font-black mb-3 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent;
+  }
+
+  .auth-subtitle {
+    @apply text-gray-400;
+  }
+
+  .auth-footer {
+    @apply text-center pt-6 border-t border-gray-800 text-gray-400;
+  }
+
+  .auth-footer a {
+    @apply text-secondary font-semibold hover:text-light transition-colors;
+  }
+}
+
+/* ============================================
+   UTILITY STYLES
+   ============================================ */
 @layer utilities {
+  /* Custom animations */
   .animate-fade-in {
     animation: fadeIn 0.3s ease-in;
   }
 
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(-10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+  .animate-slide-up {
+    animation: slideUp 0.4s ease-out;
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.3s ease-out;
+  }
+
+  /* Hidden state */
+  .hidden {
+    display: none !important;
+  }
+
+  /* Screen reader only */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  /* Text gradients */
+  .text-gradient-primary {
+    @apply bg-gradient-to-r from-primary to-primary-dark bg-clip-text text-transparent;
+  }
+
+  .text-gradient-secondary {
+    @apply bg-gradient-to-r from-secondary to-light bg-clip-text text-transparent;
+  }
+
+  /* Responsive spacing utilities */
+  .mb-responsive {
+    @apply mb-4 md:mb-6 lg:mb-8;
+  }
+
+  .mt-responsive {
+    @apply mt-4 md:mt-6 lg:mt-8;
+  }
+}
+
+/* ============================================
+   KEYFRAME ANIMATIONS
+   ============================================ */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
   }
 }

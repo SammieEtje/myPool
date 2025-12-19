@@ -4,8 +4,27 @@
 # Multi-stage build for smaller, more secure production images
 # Test files and development dependencies are excluded
 
-# Stage 1: Builder - Install dependencies and collect static files
-FROM python:3.12-slim as builder
+# Stage 1: Node.js Builder - Build Tailwind CSS
+FROM node:20-alpine as node-builder
+
+WORKDIR /build
+
+# Copy package files
+COPY package.json package-lock.json* ./
+
+# Install Node dependencies
+RUN npm ci --only=production || npm install
+
+# Copy Tailwind configuration and source files
+COPY tailwind.config.js postcss.config.js ./
+COPY static/css/input.css ./static/css/
+COPY templates ./templates
+
+# Build Tailwind CSS for production
+RUN npm run build:css
+
+# Stage 2: Python Builder - Install dependencies
+FROM python:3.12-slim as python-builder
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1 \
@@ -26,7 +45,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY requirements.txt .
 RUN pip install --user --no-cache-dir -r requirements.txt
 
-# Stage 2: Runtime - Minimal production image
+# Stage 3: Runtime - Minimal production image
 FROM python:3.12-slim
 
 # Set environment variables
@@ -47,11 +66,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
-# Copy Python packages from builder
-COPY --from=builder --chown=appuser:appuser /root/.local /home/appuser/.local
+# Copy Python packages from python-builder
+COPY --from=python-builder --chown=appuser:appuser /root/.local /home/appuser/.local
 
 # Copy application code (excluding tests via .dockerignore)
 COPY --chown=appuser:appuser . .
+
+# Copy built Tailwind CSS from node-builder
+COPY --from=node-builder --chown=appuser:appuser /build/static/css/output.css /app/static/css/output.css
 
 # Switch to non-root user
 USER appuser
