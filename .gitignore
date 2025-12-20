@@ -48,13 +48,15 @@ staticfiles/
 .DS_Store
 Thumbs.db
 
-# Node.js (for frontend build tools if needed)
+# Node.js (for frontend build tools)
 node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-package-lock.json
 yarn.lock
+
+# Tailwind CSS generated files
+static/css/output.css
 
 # Coverage
 coverage/

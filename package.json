@@ -1,0 +1,22 @@
+{
+  "name": "mypool-f1betting",
+  "version": "1.0.0",
+  "description": "F1 Betting Pool Application",
+  "scripts": {
+    "build:css": "tailwindcss -i ./static/css/input.css -o ./static/css/output.css --minify",
+    "watch:css": "tailwindcss -i ./static/css/input.css -o ./static/css/output.css --watch",
+    "dev": "npm run watch:css"
+  },
+  "keywords": [
+    "django",
+    "f1",
+    "betting"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "tailwindcss": "^3.4.1",
+    "autoprefixer": "^10.4.17",
+    "postcss": "^8.4.33"
+  }
+}

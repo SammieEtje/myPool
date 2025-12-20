@@ -4,8 +4,33 @@
 # Multi-stage build for smaller, more secure production images
 # Test files and development dependencies are excluded
 
-# Stage 1: Builder - Install dependencies and collect static files
-FROM python:3.12-slim as builder
+# Build arguments for version control
+ARG PYTHON_VERSION=3.12.8
+ARG NODE_VERSION=20.18.1
+
+# Stage 1: Node.js Builder - Build Tailwind CSS
+FROM node:${NODE_VERSION}-alpine AS node-builder
+
+WORKDIR /build
+
+# Copy package files
+COPY package.json package-lock.json ./
+
+# Install Node dependencies (including dev dependencies for build tools like Tailwind)
+# Use npm ci for reproducible builds with package-lock.json
+RUN npm ci
+
+
+# Copy Tailwind configuration and source files
+COPY tailwind.config.js postcss.config.js ./
+COPY static/css/input.css ./static/css/
+COPY templates ./templates
+
+# Build Tailwind CSS for production
+RUN npm run build:css
+
+# Stage 2: Python Builder - Install dependencies
+FROM python:${PYTHON_VERSION}-slim AS python-builder
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1 \
@@ -15,10 +40,9 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /build
 
-# Install system dependencies required for Python packages
+# Install system dependencies required for building Python packages
 RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
-    postgresql-client \
     libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
@@ -26,8 +50,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY requirements.txt .
 RUN pip install --user --no-cache-dir -r requirements.txt
 
-# Stage 2: Runtime - Minimal production image
-FROM python:3.12-slim
+# Stage 3: Runtime - Minimal production image
+FROM python:${PYTHON_VERSION}-slim
+
+# Metadata labels
+LABEL org.opencontainers.image.title="F1 Betting Pool"
+LABEL org.opencontainers.image.description="F1 race prediction and betting pool application"
+LABEL org.opencontainers.image.vendor="F1 Betting Pool Team"
+LABEL org.opencontainers.image.source="https://github.com/yourusername/myPool"
+LABEL maintainer="your-email@example.com"
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1 \
@@ -43,15 +74,19 @@ RUN useradd -m -u 1000 appuser && \
 RUN apt-get update && apt-get install -y --no-install-recommends \
     postgresql-client \
     libpq-dev \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-# Copy Python packages from builder
-COPY --from=builder --chown=appuser:appuser /root/.local /home/appuser/.local
+# Copy Python packages from python-builder
+COPY --from=python-builder --chown=appuser:appuser /root/.local /home/appuser/.local
 
 # Copy application code (excluding tests via .dockerignore)
 COPY --chown=appuser:appuser . .
+
+# Copy built Tailwind CSS from node-builder
+COPY --from=node-builder --chown=appuser:appuser /build/static/css/output.css /app/static/css/output.css
 
 # Switch to non-root user
 USER appuser
@@ -62,15 +97,20 @@ RUN python manage.py collectstatic --noinput --settings=f1betting.settings.base
 # Expose port
 EXPOSE 8000
 
-# Health check (using dedicated endpoint for better reliability)
+# Health check (using curl for better reliability)
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-    CMD python -c "from urllib.request import urlopen; urlopen('http://localhost:8000/health/', timeout=5)" || exit 1
+    CMD curl -f http://localhost:8000/health/ || exit 1
 
-# Run gunicorn
-CMD ["gunicorn", "f1betting.wsgi:application", \
-     "--bind", "0.0.0.0:8000", \
-     "--workers", "4", \
-     "--timeout", "60", \
-     "--access-logfile", "-", \
-     "--error-logfile", "-", \
-     "--log-level", "info"]
+# Default environment variables for gunicorn (can be overridden at runtime)
+ENV GUNICORN_WORKERS=4 \
+    GUNICORN_TIMEOUT=60 \
+    GUNICORN_LOG_LEVEL=info
+
+# Run gunicorn with environment variable support
+CMD gunicorn f1betting.wsgi:application \
+    --bind 0.0.0.0:8000 \
+    --workers ${GUNICORN_WORKERS} \
+    --timeout ${GUNICORN_TIMEOUT} \
+    --access-logfile - \
+    --error-logfile - \
+    --log-level ${GUNICORN_LOG_LEVEL}

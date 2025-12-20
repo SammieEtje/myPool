@@ -13,50 +13,66 @@
 
     <!-- Styles -->
     {% load static %}
-    <link rel="stylesheet" href="{% static 'css/design-system.css' %}">
-    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <!-- Tailwind CSS -->
+    <link rel="stylesheet" href="{% static 'css/output.css' %}">
 </head>
-<body>
-    <div class="app-wrapper">
-        <!-- HEADER -->
-        <header class="app-header">
-            <div class="container">
-                <nav class="navbar">
-                    <div class="navbar-brand">
-                        <div class="navbar-brand-icon">🏎️</div>
-                        <span>F1 Betting Pool</span>
+<body class="min-h-screen flex flex-col">
+    <!-- HEADER -->
+    <header class="navbar">
+        <div class="container py-4">
+            <div class="flex items-center justify-between">
+                <div class="navbar-brand">
+                    <div class="text-4xl">🏎️</div>
+                    <span>F1 Betting Pool</span>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <ul class="navbar-nav hidden sm:flex" id="mainNav">
+                    <li><a href="#" class="nav-link active" data-page="competitions">Competitions</a></li>
+                    <li><a href="#" class="nav-link" data-page="races">Races</a></li>
+                    <li><a href="#" class="nav-link" data-page="my-bets">My Bets</a></li>
+                    <li><a href="#" class="nav-link" data-page="leaderboard">Leaderboard</a></li>
+                </ul>
+
+                <div class="flex items-center gap-4">
+                    <div id="authSection">
+                        <!-- Will be populated by JavaScript -->
                     </div>
 
-                    <ul class="navbar-nav" id="mainNav">
-                        <li><a href="#" class="nav-link active" data-page="competitions">Competitions</a></li>
-                        <li><a href="#" class="nav-link" data-page="races">Races</a></li>
-                        <li><a href="#" class="nav-link" data-page="my-bets">My Bets</a></li>
-                        <li><a href="#" class="nav-link" data-page="leaderboard">Leaderboard</a></li>
-                    </ul>
-
-                    <div class="user-menu">
-                        <div id="authSection">
-                            <!-- Will be populated by JavaScript -->
-                        </div>
-                    </div>
-                </nav>
-            </div>
-        </header>
-
-        <!-- MAIN CONTENT -->
-        <main class="app-main">
-            <div class="container">
-                <div id="appContent">
-                    <!-- Dynamic content will be loaded here -->
+                    <!-- Mobile Menu Button -->
+                    <button id="mobileMenuBtn" class="sm:hidden flex flex-col gap-1.5 p-2 rounded-lg hover:bg-gray-800 transition-colors" aria-label="Toggle menu">
+                        <span class="block w-6 h-0.5 bg-white transition-all"></span>
+                        <span class="block w-6 h-0.5 bg-white transition-all"></span>
+                        <span class="block w-6 h-0.5 bg-white transition-all"></span>
+                    </button>
                 </div>
             </div>
-        </main>
 
-        <!-- FOOTER -->
-        <footer style="text-align: center; padding: 2rem; color: var(--color-text-muted); border-top: 1px solid var(--color-dark-700);">
-            <p>&copy; 2024 F1 Betting Pool. Built for racing enthusiasts.</p>
-        </footer>
-    </div>
+            <!-- Mobile Navigation -->
+            <div id="mobileNav" class="hidden sm:hidden mt-4 pt-4 border-t border-gray-800">
+                <ul class="flex flex-col gap-2">
+                    <li><a href="#" class="nav-link active block" data-page="competitions">Competitions</a></li>
+                    <li><a href="#" class="nav-link block" data-page="races">Races</a></li>
+                    <li><a href="#" class="nav-link block" data-page="my-bets">My Bets</a></li>
+                    <li><a href="#" class="nav-link block" data-page="leaderboard">Leaderboard</a></li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="flex-1 py-8 md:py-12">
+        <div class="container">
+            <div id="appContent">
+                <!-- Dynamic content will be loaded here -->
+            </div>
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="text-center py-8 text-gray-500 border-t border-gray-800">
+        <p>&copy; 2024 F1 Betting Pool. Built for racing enthusiasts.</p>
+    </footer>
 
     <!-- TEMPLATES -->
     <!-- Competitions Page Template -->
@@ -66,7 +82,7 @@
             <p class="page-subtitle">Join a competition and start predicting race results</p>
         </div>
 
-        <div id="competitionsList" class="grid grid-cols-3">
+        <div id="competitionsList" class="grid-cols-auto">
             <!-- Competitions will be loaded here -->
         </div>
 
@@ -126,7 +142,7 @@
             </select>
         </div>
 
-        <div id="racesList" class="grid grid-cols-2">
+        <div id="racesList" class="grid-cols-auto">
             <!-- Races will be loaded here -->
         </div>
 

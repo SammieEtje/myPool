@@ -76,6 +76,13 @@ db.sqlite3
 staticfiles/
 media/
 
+# Node.js dependencies and build artifacts (built in container)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+static/css/output.css
+
 # Logs
 *.log
 
