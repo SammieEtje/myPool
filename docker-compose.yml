@@ -4,7 +4,7 @@ services:
     image: postgres:18.1-alpine
     container_name: f1betting-db
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-f1betting}
       POSTGRES_USER: ${POSTGRES_USER:-f1user}
