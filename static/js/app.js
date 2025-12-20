@@ -790,7 +790,7 @@ const app = {
       driverCard.innerHTML = `
         <div class="driver-card-number">#${driver.driver_number}</div>
         <div class="driver-card-info">
-          <div class="driver-card-name">${driver.first_name} ${driver.last_name}</div>
+          <div class="driver-card-name">${driver.last_name}</div>
           <div class="driver-card-team">${driver.team}</div>
         </div>
       `;
@@ -846,12 +846,11 @@ const app = {
     if (driver) {
       slot.classList.add('filled');
       slot.innerHTML = `
-        <span class="position-number">P${position}</span>
+        <span class="position-number">${position}</span>
         <div class="prediction-driver" draggable="true" data-position="${position}">
           <div class="prediction-driver-number">#${driver.driver_number}</div>
           <div class="prediction-driver-info">
-            <div class="prediction-driver-name">${driver.first_name} ${driver.last_name}</div>
-            <div class="prediction-driver-team">${driver.team}</div>
+            <div class="prediction-driver-name">${driver.last_name}</div>
           </div>
         </div>
         <button class="remove-driver" onclick="app.removeDriverFromPrediction(${position})">✕</button>
@@ -871,8 +870,8 @@ const app = {
       slot.classList.remove('filled');
       const positionText = this.getPositionText(position);
       slot.innerHTML = `
-        <span class="position-number">P${position}</span>
-        <span class="empty-text">Drop driver here for ${positionText} place</span>
+        <span class="position-number">${position}</span>
+        <span class="empty-text">${positionText}</span>
       `;
     }
   },

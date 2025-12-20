@@ -406,34 +406,86 @@
     @apply text-gray-500;
   }
 
-  /* Driver Card (Betting) */
-  .driver-card {
-    @apply bg-gray-900 border-2 border-gray-800 rounded-lg p-4 cursor-grab transition-all duration-200 flex items-center gap-3 hover:border-primary hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/20;
+  /* Betting Page Layout */
+  .betting-header {
+    @apply flex items-center gap-4 mb-6 pb-4 border-b border-gray-800;
   }
 
-  .driver-card.dragging {
-    @apply opacity-50 cursor-grabbing;
-  }
-
-  .driver-card-number {
-    @apply text-2xl font-black text-primary min-w-[50px] text-center;
-  }
-
-  .driver-card-info {
+  .betting-header-info {
     @apply flex-1;
   }
 
-  .driver-card-name {
-    @apply font-bold text-white mb-1;
+  .betting-title {
+    @apply text-2xl font-display font-bold text-white;
   }
 
-  .driver-card-team {
+  .betting-subtitle {
     @apply text-sm text-gray-400;
   }
 
-  /* Prediction Slot */
+  .betting-layout {
+    @apply grid grid-cols-1 lg:grid-cols-2 gap-6;
+    max-height: calc(100vh - 200px);
+  }
+
+  .betting-panel {
+    @apply bg-gray-900 rounded-xl border border-gray-800 overflow-hidden flex flex-col;
+  }
+
+  .betting-panel-header {
+    @apply flex items-center justify-between px-4 py-3 bg-gray-800 border-b border-gray-700;
+  }
+
+  .betting-panel-header h2 {
+    @apply text-lg font-bold text-white m-0;
+  }
+
+  .bet-actions-inline {
+    @apply flex gap-2;
+  }
+
+  /* Drivers Grid - Compact cards */
+  .drivers-grid {
+    @apply grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 gap-2 p-3 overflow-y-auto;
+    max-height: calc(100vh - 280px);
+  }
+
+  .driver-card {
+    @apply bg-gray-800 border border-gray-700 rounded-lg p-2 cursor-pointer transition-all duration-150 hover:border-primary hover:bg-gray-700;
+  }
+
+  .driver-card.dragging {
+    @apply opacity-50;
+  }
+
+  .driver-card.hidden {
+    display: none !important;
+  }
+
+  .driver-card-number {
+    @apply text-lg font-black text-primary;
+  }
+
+  .driver-card-info {
+    @apply mt-1;
+  }
+
+  .driver-card-name {
+    @apply text-sm font-semibold text-white leading-tight;
+  }
+
+  .driver-card-team {
+    @apply text-xs text-gray-400 truncate;
+  }
+
+  /* Predictions Grid - 2 columns of 5 */
+  .predictions-grid {
+    @apply grid grid-cols-2 gap-2 p-3 overflow-y-auto;
+    max-height: calc(100vh - 280px);
+  }
+
   .prediction-slot {
-    @apply bg-gray-900 border-2 border-dashed border-gray-700 rounded-lg p-4 min-h-[70px] flex items-center gap-3 transition-all duration-200;
+    @apply bg-gray-800 border-2 border-dashed border-gray-600 rounded-lg p-2 min-h-[52px] flex items-center gap-2 transition-all duration-150 relative;
   }
 
   .prediction-slot.drag-over {
@@ -441,11 +493,15 @@
   }
 
   .prediction-slot.filled {
-    @apply border-solid border-secondary bg-gray-800;
+    @apply border-solid border-secondary/50 bg-gray-700;
+  }
+
+  .prediction-slot .empty-text {
+    @apply text-gray-500 text-sm;
   }
 
   .position-number {
-    @apply text-xl font-black min-w-[50px];
+    @apply text-lg font-black min-w-[24px] text-center;
   }
 
   .prediction-slot[data-position="1"] .position-number {
@@ -458,6 +514,31 @@
 
   .prediction-slot[data-position="3"] .position-number {
     @apply text-podium-bronze;
+  }
+
+  /* Prediction driver inside slot */
+  .prediction-driver {
+    @apply flex items-center gap-2 flex-1 cursor-grab;
+  }
+
+  .prediction-driver-number {
+    @apply text-sm font-bold text-primary;
+  }
+
+  .prediction-driver-info {
+    @apply flex-1 min-w-0;
+  }
+
+  .prediction-driver-name {
+    @apply text-sm font-semibold text-white truncate;
+  }
+
+  .prediction-driver-team {
+    @apply text-xs text-gray-400 truncate;
+  }
+
+  .remove-driver {
+    @apply w-5 h-5 rounded-full bg-danger/20 text-danger text-xs flex items-center justify-center hover:bg-danger hover:text-white transition-colors cursor-pointer;
   }
 
   /* Auth Pages */
