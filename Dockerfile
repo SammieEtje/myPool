@@ -16,9 +16,8 @@ WORKDIR /build
 # Copy package files
 COPY package.json package-lock.json* ./
 
-# Install Node dependencies
-# RUN npm ci --only=production || npm install
-RUN if [ -f package-lock.json ]; then npm ci --omit=dev; else npm install --production; fi
+# Install Node dependencies (including dev dependencies for build tools like Tailwind)
+RUN npm install
 
 
 # Copy Tailwind configuration and source files
