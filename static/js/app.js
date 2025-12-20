@@ -3,16 +3,18 @@
 
 const app = {
   currentUser: null,
-  currentPage: 'competitions',
+  currentPage: 'home',
   selectedDrivers: [],
   drivers: [],
   competitions: [],
+  activeCompetition: null,
+  countdownIntervals: [],
 
   // Initialize app
   init() {
     this.checkAuth();
     this.setupNavigation();
-    this.loadPage('competitions');
+    this.loadPage('home');
   },
 
   // Check authentication status
@@ -105,14 +107,12 @@ const app = {
   // Load page content
   loadPage(page) {
     this.currentPage = page;
-    const content = document.getElementById('appContent');
+    // Clear any countdown timers
+    this.clearCountdownTimers();
 
     switch(page) {
-      case 'competitions':
-        this.loadCompetitionsPage();
-        break;
-      case 'races':
-        this.loadRacesPage();
+      case 'home':
+        this.loadHomePage();
         break;
       case 'my-bets':
         this.loadMyBetsPage();
@@ -121,6 +121,141 @@ const app = {
         this.loadLeaderboardPage();
         break;
     }
+  },
+
+  // Clear countdown timers
+  clearCountdownTimers() {
+    this.countdownIntervals.forEach(id => clearInterval(id));
+    this.countdownIntervals = [];
+  },
+
+  // Load home page with active competition races
+  async loadHomePage() {
+    const template = document.getElementById('template-home');
+    const content = document.getElementById('appContent');
+    content.innerHTML = template.innerHTML;
+
+    const loading = document.getElementById('homeLoading');
+    const empty = document.getElementById('homeEmpty');
+
+    loading.classList.remove('hidden');
+
+    try {
+      const response = await fetch('/api/competitions/active/', {
+        credentials: 'include'
+      });
+
+      loading.classList.add('hidden');
+
+      if (response.ok) {
+        const data = await response.json();
+        this.activeCompetition = data;
+
+        // Set competition name
+        document.getElementById('activeCompetitionName').textContent = data.name;
+
+        // Group and render races
+        this.renderRaceGroups(data.races || []);
+      } else {
+        // No active competition
+        empty.classList.remove('hidden');
+      }
+    } catch (error) {
+      console.error('Failed to load active competition:', error);
+      loading.classList.add('hidden');
+      empty.classList.remove('hidden');
+    }
+  },
+
+  // Render races grouped by status
+  renderRaceGroups(races) {
+    const now = new Date();
+
+    // Group races
+    const nextRace = races.find(r => r.is_betting_open);
+    const upcoming = races.filter(r => r.is_betting_open && r !== nextRace);
+    const awaitingResults = races.filter(r => !r.is_betting_open && r.status !== 'completed');
+    const completed = races.filter(r => r.status === 'completed');
+
+    // Render Next Race (featured)
+    if (nextRace) {
+      const section = document.getElementById('nextRaceSection');
+      const container = document.getElementById('nextRaceContainer');
+      section.classList.remove('hidden');
+      container.appendChild(this.createRaceCard(nextRace, true));
+    }
+
+    // Render Upcoming Races
+    if (upcoming.length > 0) {
+      const section = document.getElementById('upcomingRacesSection');
+      const list = document.getElementById('upcomingRacesList');
+      section.classList.remove('hidden');
+      upcoming.forEach(race => {
+        list.appendChild(this.createRaceCard(race));
+      });
+    }
+
+    // Render Awaiting Results
+    if (awaitingResults.length > 0) {
+      const section = document.getElementById('awaitingResultsSection');
+      const list = document.getElementById('awaitingResultsList');
+      section.classList.remove('hidden');
+      awaitingResults.forEach(race => {
+        list.appendChild(this.createRaceCard(race));
+      });
+    }
+
+    // Render Completed Races
+    if (completed.length > 0) {
+      const section = document.getElementById('completedRacesSection');
+      const list = document.getElementById('completedRacesList');
+      section.classList.remove('hidden');
+      completed.forEach(race => {
+        list.appendChild(this.createRaceCard(race));
+      });
+    }
+
+    // Start countdown timers
+    this.startCountdownTimers();
+  },
+
+  // Start countdown timers for all visible timers
+  startCountdownTimers() {
+    const timers = document.querySelectorAll('.countdown-timer[data-deadline]');
+    timers.forEach(timer => {
+      const deadline = new Date(timer.dataset.deadline);
+      const valueElement = timer.querySelector('.countdown-value');
+
+      const updateTimer = () => {
+        const now = new Date();
+        const diff = deadline - now;
+
+        if (diff <= 0) {
+          valueElement.textContent = 'Closed';
+          timer.classList.add('countdown-expired');
+          return;
+        }
+
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+        if (days > 0) {
+          valueElement.textContent = `${days}d ${hours}h`;
+        } else if (hours > 0) {
+          valueElement.textContent = `${hours}h ${minutes}m`;
+        } else {
+          const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+          valueElement.textContent = `${minutes}m ${seconds}s`;
+          // Add urgency styling when under 1 hour
+          timer.classList.add('countdown-urgent');
+        }
+      };
+
+      updateTimer();
+      const intervalId = setInterval(updateTimer, 1000);
+      this.countdownIntervals.push(intervalId);
+    });
   },
 
   // Load competitions page
@@ -298,58 +433,109 @@ const app = {
   },
 
   // Create race card
-  createRaceCard(race) {
+  createRaceCard(race, isFeatured = false) {
     const template = document.getElementById('template-race-card');
     const card = template.content.cloneNode(true);
 
     const cardElement = card.querySelector('.race-card');
-    if (race.is_betting_open) {
+    const isCompleted = race.status === 'completed';
+    const isBettingOpen = race.is_betting_open;
+    const hasBet = race.user_has_bet;
+
+    // Set visual state classes
+    if (isFeatured) {
+      cardElement.classList.add('featured-race');
+    }
+    if (isCompleted) {
+      cardElement.classList.add('race-completed');
+    } else if (isBettingOpen) {
       cardElement.classList.add('betting-open');
     } else {
       cardElement.classList.add('betting-closed');
     }
 
+    // Basic info
     card.querySelector('.race-round').textContent = `Round ${race.round_number}`;
     card.querySelector('.race-name').textContent = race.name;
     card.querySelector('.race-location').textContent = `${race.location}, ${race.country}`;
     card.querySelector('.race-datetime').textContent = new Date(race.race_datetime).toLocaleString();
     card.querySelector('.race-deadline-text').textContent = `Betting closes: ${new Date(race.betting_deadline).toLocaleString()}`;
 
-    const statusBadge = card.querySelector('.race-status-badge');
-    statusBadge.textContent = race.status;
-    statusBadge.className = `badge ${race.is_betting_open ? 'badge-success' : 'badge-error'}`;
+    // Bet status icon
+    const betStatusIcon = card.querySelector('.bet-status-icon');
+    if (hasBet && betStatusIcon) {
+      betStatusIcon.classList.remove('hidden');
+      betStatusIcon.textContent = '✓';
+      betStatusIcon.title = 'Bet placed';
+      betStatusIcon.classList.add('text-success');
+    }
 
-    const betBtn = card.querySelector('.btn-place-bet');
-    betBtn.dataset.raceId = race.id;
+    // Status badge
+    const statusBadge = card.querySelector('.race-status-badge');
+    if (isCompleted) {
+      statusBadge.textContent = 'Completed';
+      statusBadge.className = 'badge badge-secondary';
+    } else if (isBettingOpen) {
+      statusBadge.textContent = 'Betting Open';
+      statusBadge.className = 'badge badge-success';
+    } else {
+      statusBadge.textContent = 'Betting Closed';
+      statusBadge.className = 'badge badge-error';
+    }
+
+    // Countdown timer (only for open betting)
+    if (isBettingOpen && !isCompleted) {
+      const countdownTimer = card.querySelector('.countdown-timer');
+      if (countdownTimer) {
+        countdownTimer.classList.remove('hidden');
+        countdownTimer.dataset.deadline = race.betting_deadline;
+      }
+    }
+
+    // Points preview (for completed races with user bets)
+    if (isCompleted && hasBet && race.user_points !== undefined && race.user_points !== null) {
+      const pointsPreview = card.querySelector('.points-preview');
+      if (pointsPreview) {
+        pointsPreview.classList.remove('hidden');
+        pointsPreview.querySelector('.points-value').textContent = `${race.user_points} pts`;
+      }
+    }
+
+    // Action button
+    const actionBtn = card.querySelector('.btn-race-action');
+    actionBtn.dataset.raceId = race.id;
 
     if (!this.currentUser) {
       // Not logged in
-      betBtn.disabled = true;
-      betBtn.textContent = 'Login to Bet';
-    } else if (race.user_has_bet && !race.is_betting_open) {
-      // User has bet and betting is closed
-      betBtn.disabled = true;
-      betBtn.textContent = 'Bet Fixed';
-      betBtn.classList.remove('btn-primary');
-      betBtn.classList.add('btn-success');
-    } else if (race.user_has_bet && race.is_betting_open) {
+      actionBtn.disabled = true;
+      actionBtn.textContent = 'Login to Bet';
+    } else if (isCompleted) {
+      // Race completed - show results
+      actionBtn.textContent = 'View Results';
+      actionBtn.classList.remove('btn-primary');
+      actionBtn.classList.add('btn-secondary');
+      actionBtn.addEventListener('click', () => this.viewRaceResults(race.id));
+    } else if (hasBet && !isBettingOpen) {
+      // User has bet and betting is closed - awaiting race
+      actionBtn.disabled = true;
+      actionBtn.textContent = 'Awaiting Race';
+      actionBtn.classList.remove('btn-primary');
+      actionBtn.classList.add('btn-outline');
+    } else if (hasBet && isBettingOpen) {
       // User has bet and can still change it
-      betBtn.textContent = 'Change Bet';
-      betBtn.classList.add('btn-secondary');
-      betBtn.addEventListener('click', () => this.loadBettingPage(race));
-    } else if (race.is_betting_open) {
+      actionBtn.textContent = 'Change Bet';
+      actionBtn.classList.remove('btn-primary');
+      actionBtn.classList.add('btn-secondary');
+      actionBtn.addEventListener('click', () => this.loadBettingPage(race));
+    } else if (isBettingOpen) {
       // No bet yet, betting is open
-      betBtn.textContent = 'Place Bet';
-      betBtn.addEventListener('click', () => this.loadBettingPage(race));
+      actionBtn.textContent = 'Place Bet';
+      actionBtn.addEventListener('click', () => this.loadBettingPage(race));
     } else {
       // Betting is closed, no bet placed
-      betBtn.disabled = true;
-      betBtn.textContent = 'Betting Closed';
+      actionBtn.disabled = true;
+      actionBtn.textContent = 'Betting Closed';
     }
-
-    const resultsBtn = card.querySelector('.btn-view-results');
-    resultsBtn.dataset.raceId = race.id;
-    resultsBtn.addEventListener('click', () => this.viewRaceResults(race.id));
 
     return card;
   },

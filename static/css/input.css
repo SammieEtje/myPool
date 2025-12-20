@@ -232,6 +232,88 @@
     @apply text-gray-400 text-sm;
   }
 
+  .race-meta {
+    @apply p-6;
+  }
+
+  /* Featured Race Card */
+  .featured-race {
+    @apply border-2 border-primary shadow-lg shadow-primary/20 transform scale-[1.02];
+  }
+
+  .featured-race .race-name {
+    @apply text-2xl;
+  }
+
+  .featured-race:hover {
+    @apply scale-[1.04];
+  }
+
+  /* Completed Race Card */
+  .race-completed {
+    @apply opacity-75 border-l-gray-500;
+  }
+
+  .race-completed:hover {
+    @apply opacity-100;
+  }
+
+  /* Bet Status Icon */
+  .bet-status-icon {
+    @apply inline-flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold;
+  }
+
+  .bet-status-icon.text-success {
+    @apply bg-success/20;
+  }
+
+  /* Countdown Timer */
+  .countdown-timer {
+    @apply flex items-center gap-2 text-sm mt-3 p-2 bg-gray-800 rounded-lg;
+  }
+
+  .countdown-label {
+    @apply text-gray-500;
+  }
+
+  .countdown-value {
+    @apply font-bold font-mono text-warning;
+  }
+
+  .countdown-expired {
+    @apply text-danger;
+  }
+
+  .countdown-expired .countdown-value {
+    @apply text-danger;
+  }
+
+  .countdown-urgent {
+    @apply bg-warning/10 border border-warning/30;
+  }
+
+  .countdown-urgent .countdown-value {
+    @apply text-warning animate-pulse;
+  }
+
+  /* Points Preview */
+  .points-preview {
+    @apply flex items-center gap-2 mt-3 p-2 bg-secondary/10 rounded-lg border border-secondary/30;
+  }
+
+  .points-label {
+    @apply text-gray-400 text-sm;
+  }
+
+  .points-value {
+    @apply font-bold text-secondary;
+  }
+
+  /* Section Title */
+  .section-title {
+    @apply text-xl font-bold mb-4;
+  }
+
   /* Leaderboard */
   .leaderboard-item {
     @apply flex items-center gap-4 p-4 bg-gray-900 rounded-lg mb-2 transition-all duration-200 hover:bg-gray-800 hover:translate-x-1 border border-gray-800;

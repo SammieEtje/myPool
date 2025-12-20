@@ -50,6 +50,18 @@ class Competition(models.Model):
     def __str__(self):
         return f"{self.name} ({self.year})"
 
+    def save(self, *args, **kwargs):
+        """Ensure only one competition can be active at a time."""
+        if self.status == "active":
+            # Deactivate any other active competitions
+            Competition.objects.filter(status="active").exclude(pk=self.pk).update(status="published")
+        super().save(*args, **kwargs)
+
+    @classmethod
+    def get_active(cls):
+        """Get the currently active competition, if any."""
+        return cls.objects.filter(status="active").first()
+
     class Meta:
         ordering = ["-year", "-start_date"]
 

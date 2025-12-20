@@ -58,7 +58,7 @@ class CompetitionSerializer(serializers.ModelSerializer):
 
 class RaceSerializer(serializers.ModelSerializer):
     competition_name = serializers.CharField(source="competition.name", read_only=True)
-    is_betting_open = serializers.BooleanField(read_only=True)
+    is_betting_open = serializers.SerializerMethodField()
 
     class Meta:
         model = Race
@@ -76,6 +76,10 @@ class RaceSerializer(serializers.ModelSerializer):
             "is_betting_open",
             "created_at",
         ]
+
+    def get_is_betting_open(self, obj):
+        """Explicitly call the model method to check betting status."""
+        return obj.is_betting_open()
 
 
 class BetTypeSerializer(serializers.ModelSerializer):
@@ -211,6 +215,7 @@ class RaceDetailSerializer(serializers.ModelSerializer):
     competition = CompetitionSerializer(read_only=True)
     results = RaceResultSerializer(many=True, read_only=True)
     user_bets = serializers.SerializerMethodField()
+    is_betting_open = serializers.SerializerMethodField()
 
     class Meta:
         model = Race
@@ -228,6 +233,10 @@ class RaceDetailSerializer(serializers.ModelSerializer):
             "results",
             "user_bets",
         ]
+
+    def get_is_betting_open(self, obj):
+        """Explicitly call the model method to check betting status."""
+        return obj.is_betting_open()
 
     def get_user_bets(self, obj):
         """Get current user's bets for this race"""

@@ -28,8 +28,7 @@
 
                 <!-- Desktop Navigation -->
                 <ul class="navbar-nav hidden sm:flex" id="mainNav">
-                    <li><a href="#" class="nav-link active" data-page="competitions">Competitions</a></li>
-                    <li><a href="#" class="nav-link" data-page="races">Races</a></li>
+                    <li><a href="#" class="nav-link active" data-page="home">Home</a></li>
                     <li><a href="#" class="nav-link" data-page="my-bets">My Bets</a></li>
                     <li><a href="#" class="nav-link" data-page="leaderboard">Leaderboard</a></li>
                 </ul>
@@ -51,8 +50,7 @@
             <!-- Mobile Navigation -->
             <div id="mobileNav" class="hidden sm:hidden mt-4 pt-4 border-t border-gray-800">
                 <ul class="flex flex-col gap-2">
-                    <li><a href="#" class="nav-link active block" data-page="competitions">Competitions</a></li>
-                    <li><a href="#" class="nav-link block" data-page="races">Races</a></li>
+                    <li><a href="#" class="nav-link active block" data-page="home">Home</a></li>
                     <li><a href="#" class="nav-link block" data-page="my-bets">My Bets</a></li>
                     <li><a href="#" class="nav-link block" data-page="leaderboard">Leaderboard</a></li>
                 </ul>
@@ -75,6 +73,50 @@
     </footer>
 
     <!-- TEMPLATES -->
+    <!-- Home Page Template (Races from Active Competition) -->
+    <template id="template-home">
+        <div class="page-header">
+            <h1 class="page-title" id="activeCompetitionName">Loading...</h1>
+            <p class="page-subtitle">Place your predictions for upcoming races</p>
+        </div>
+
+        <!-- Next Race (Featured) -->
+        <div id="nextRaceSection" class="mb-12 hidden">
+            <h2 class="section-title text-2xl font-bold mb-4 flex items-center gap-2">
+                <span class="text-primary">Next Race</span>
+            </h2>
+            <div id="nextRaceContainer"></div>
+        </div>
+
+        <!-- Upcoming Races -->
+        <div id="upcomingRacesSection" class="mb-12 hidden">
+            <h2 class="section-title text-xl font-bold mb-4 text-gray-400">Upcoming Races</h2>
+            <div id="upcomingRacesList" class="grid-cols-auto"></div>
+        </div>
+
+        <!-- Awaiting Results -->
+        <div id="awaitingResultsSection" class="mb-12 hidden">
+            <h2 class="section-title text-xl font-bold mb-4 text-gray-400">Awaiting Results</h2>
+            <div id="awaitingResultsList" class="grid-cols-auto"></div>
+        </div>
+
+        <!-- Completed Races -->
+        <div id="completedRacesSection" class="hidden">
+            <h2 class="section-title text-xl font-bold mb-4 text-gray-400">Completed Races</h2>
+            <div id="completedRacesList" class="grid-cols-auto"></div>
+        </div>
+
+        <div class="loading hidden" id="homeLoading">
+            <div class="spinner"></div>
+        </div>
+
+        <div class="empty-state hidden" id="homeEmpty">
+            <div class="empty-state-icon">🏁</div>
+            <h3>No active competition</h3>
+            <p>Check back later for upcoming races</p>
+        </div>
+    </template>
+
     <!-- Competitions Page Template -->
     <template id="template-competitions">
         <div class="page-header">
@@ -160,8 +202,8 @@
     <!-- Place Bet Page Template -->
     <template id="template-place-bet">
         <div class="page-header">
-            <button class="btn btn-ghost" onclick="app.loadPage('races')" style="margin-bottom: 1rem;">
-                ← Back to Races
+            <button class="btn btn-ghost" onclick="app.loadPage('home')" style="margin-bottom: 1rem;">
+                ← Back to Home
             </button>
             <h1 class="page-title" id="betRaceName"></h1>
             <p class="page-subtitle" id="betRaceDetails"></p>
@@ -245,7 +287,10 @@
                     <h3 class="race-name"></h3>
                     <p class="race-location"></p>
                 </div>
-                <span class="badge race-status-badge"></span>
+                <div class="race-status-area flex items-center gap-2">
+                    <span class="bet-status-icon hidden"></span>
+                    <span class="badge race-status-badge"></span>
+                </div>
             </div>
             <div class="race-meta">
                 <div class="race-date">
@@ -256,13 +301,20 @@
                     <span>⏰</span>
                     <span class="race-deadline-text"></span>
                 </div>
+                <!-- Countdown Timer -->
+                <div class="countdown-timer hidden" data-deadline="">
+                    <span class="countdown-label">Betting closes in:</span>
+                    <span class="countdown-value"></span>
+                </div>
+                <!-- Points Preview (for completed races) -->
+                <div class="points-preview hidden">
+                    <span class="points-label">Your Score:</span>
+                    <span class="points-value"></span>
+                </div>
             </div>
             <div class="card-footer">
-                <button class="btn btn-primary btn-place-bet" data-race-id="">
+                <button class="btn btn-primary btn-race-action" data-race-id="">
                     Place Bet
-                </button>
-                <button class="btn btn-outline btn-view-results" data-race-id="">
-                    View Results
                 </button>
             </div>
         </div>
@@ -337,7 +389,7 @@
             <div class="empty-state-icon">🎯</div>
             <h3>No bets placed yet</h3>
             <p>Start placing bets on upcoming races</p>
-            <button class="btn btn-primary mt-lg" onclick="app.loadPage('races')">
+            <button class="btn btn-primary mt-lg" onclick="app.loadPage('home')">
                 View Races
             </button>
         </div>

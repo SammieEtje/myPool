@@ -1,3 +1,4 @@
+from django.db.models import Sum
 from django.http import JsonResponse
 from django.utils import timezone
 from rest_framework import permissions, status, viewsets
@@ -81,6 +82,46 @@ class CompetitionViewSet(viewsets.ReadOnlyModelViewSet):
         races = competition.races.select_related("competition").all()
         serializer = RaceSerializer(races, many=True)
         return Response(serializer.data)
+
+    @action(detail=False, methods=["get"])
+    def active(self, request):
+        """Get the currently active competition with races and user's bet status."""
+        active_competition = Competition.get_active()
+
+        if not active_competition:
+            return Response({"error": "No active competition"}, status=status.HTTP_404_NOT_FOUND)
+
+        # Get races ordered by round number
+        races = active_competition.races.order_by("round_number").all()
+
+        # Get user's bets and points if authenticated
+        user_bets = set()
+        user_points = {}
+        if request.user.is_authenticated:
+            bets = Bet.objects.filter(user=request.user, race__competition=active_competition)
+            user_bets = {b.race_id for b in bets}
+
+            # Get points for completed races
+            points = (
+                bets.filter(race__status="completed")
+                .values("race_id")
+                .annotate(total=Sum("points_earned"))
+            )
+            user_points = {p["race_id"]: p["total"] for p in points}
+
+        # Build race data with user-specific info
+        race_data = []
+        for race in races:
+            data = RaceSerializer(race, context={"request": request}).data
+            data["user_has_bet"] = race.id in user_bets
+            data["user_points"] = user_points.get(race.id, 0) if race.status == "completed" else None
+            race_data.append(data)
+
+        # Build response
+        response_data = CompetitionSerializer(active_competition, context={"request": request}).data
+        response_data["races"] = race_data
+
+        return Response(response_data)
 
     @action(detail=True, methods=["post"])
     def join(self, request, pk=None):
@@ -190,13 +231,24 @@ class BetViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=["post"])
     def bulk_create(self, request):
-        """Create multiple bets at once (for Top 10 predictions)"""
+        """Create multiple bets at once (for Top 10 predictions) - auto-joins competition."""
         serializer = BetCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
         race = serializer.validated_data["race"]
         bet_type = serializer.validated_data["bet_type"]
         predictions = serializer.validated_data["predictions"]
+        competition = race.competition
+
+        # Auto-join: Add user to competition if not already a participant
+        if request.user not in competition.participants.all():
+            if competition.status not in ["published", "active"]:
+                return Response(
+                    {"error": "Competition is not open for joining"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            competition.participants.add(request.user)
+            CompetitionStanding.objects.get_or_create(competition=competition, user=request.user)
 
         # Delete existing bets for this race/bet_type
         Bet.objects.filter(user=request.user, race=race, bet_type=bet_type).delete()
