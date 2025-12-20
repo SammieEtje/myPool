@@ -14,10 +14,11 @@ FROM node:${NODE_VERSION}-alpine AS node-builder
 WORKDIR /build
 
 # Copy package files
-COPY package.json package-lock.json* ./
+COPY package.json package-lock.json ./
 
 # Install Node dependencies (including dev dependencies for build tools like Tailwind)
-RUN npm install
+# Use npm ci for reproducible builds with package-lock.json
+RUN npm ci
 
 
 # Copy Tailwind configuration and source files
