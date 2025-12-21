@@ -225,6 +225,10 @@
     @apply flex justify-between items-start p-6;
   }
 
+  .race-status-area {
+    @apply flex flex-col items-center gap-3;
+  }
+
   .race-details {
     @apply flex flex-col;
   }
@@ -241,9 +245,9 @@
     @apply text-gray-400 text-sm;
   }
 
-  .race-meta {
+  /* .race-meta {
     @apply p-6;
-  }
+  } */
 
   /* Featured Race Card */
   .featured-race {
@@ -442,7 +446,7 @@
   }
 
   .betting-panel-header {
-    @apply flex items-center justify-between px-4 py-3 bg-gray-800 border-b border-gray-700;
+    @apply flex items-center justify-between px-4 py-2 bg-gray-800 border-b border-gray-700;
   }
 
   .betting-panel-header h2 {
