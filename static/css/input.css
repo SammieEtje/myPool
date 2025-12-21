@@ -10,7 +10,12 @@
     @apply bg-dark text-gray-100 font-sans antialiased;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-display font-bold;
   }
 
@@ -218,6 +223,10 @@
 
   .race-card-header {
     @apply flex justify-between items-start mb-4;
+  }
+
+  .race-details {
+    @apply flex flex-col;
   }
 
   .race-round {
@@ -451,7 +460,7 @@
   }
 
   .driver-card {
-    @apply bg-gray-800 border border-gray-700 rounded-lg p-2 cursor-pointer transition-all duration-150 hover:border-primary hover:bg-gray-700;
+    @apply bg-gray-800 border border-gray-700 rounded-lg p-1 cursor-pointer transition-all duration-150 hover:border-primary hover:bg-gray-700 flex grid-cols-4 gap-4;
   }
 
   .driver-card.dragging {
@@ -463,7 +472,7 @@
   }
 
   .driver-card-number {
-    @apply text-lg font-black text-primary;
+    @apply text-lg font-black text-primary col-span-1;
   }
 
   .driver-card-info {
@@ -485,7 +494,7 @@
   }
 
   .prediction-slot {
-    @apply bg-gray-800 border-2 border-dashed border-gray-600 rounded-lg p-2 min-h-[52px] flex items-center gap-2 transition-all duration-150 relative;
+    @apply bg-gray-800 border-2 border-dashed border-gray-600 rounded-lg p-2 min-h-[52px] flex grid-cols-5 gap-4;
   }
 
   .prediction-slot.drag-over {
@@ -493,7 +502,7 @@
   }
 
   .prediction-slot.filled {
-    @apply border-solid border-secondary/50 bg-gray-700;
+    @apply border-solid border-secondary/50 bg-gray-700 items-center;
   }
 
   .prediction-slot .empty-text {
@@ -501,7 +510,7 @@
   }
 
   .position-number {
-    @apply text-lg font-black min-w-[24px] text-center;
+    @apply text-lg font-black min-w-[24px] text-center col-span-1;
   }
 
   .prediction-slot[data-position="1"] .position-number {
@@ -518,11 +527,11 @@
 
   /* Prediction driver inside slot */
   .prediction-driver {
-    @apply flex items-center gap-2 flex-1 cursor-grab;
+    @apply flex items-center gap-2 flex-1 cursor-grab flex grid-cols-4 gap-4;
   }
 
   .prediction-driver-number {
-    @apply text-sm font-bold text-primary;
+    @apply text-sm font-bold text-primary col-span-1;
   }
 
   .prediction-driver-info {
@@ -530,7 +539,7 @@
   }
 
   .prediction-driver-name {
-    @apply text-sm font-semibold text-white truncate;
+    @apply text-sm font-semibold text-white truncate col-span-3;
   }
 
   .prediction-driver-team {
@@ -538,7 +547,7 @@
   }
 
   .remove-driver {
-    @apply w-5 h-5 rounded-full bg-danger/20 text-danger text-xs flex items-center justify-center hover:bg-danger hover:text-white transition-colors cursor-pointer;
+    @apply w-5 h-5 rounded-full bg-danger/50 text-danger text-white/50 flex items-center justify-center hover:bg-danger hover:text-white transition-colors cursor-pointer col-span-1;
   }
 
   /* Auth Pages */

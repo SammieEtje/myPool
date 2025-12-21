@@ -11,8 +11,12 @@ from django.core.exceptions import ImproperlyConfigured
 
 from .base import *  # noqa
 
-# Force production mode
-DEBUG = False
+# Allow DEBUG override via environment for Docker development
+DEBUG = config("DEBUG", default=False, cast=bool)
+
+# Use simple static files storage in debug mode (no manifest caching)
+if DEBUG:
+    STATICFILES_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"
 
 # Production requires proper ALLOWED_HOSTS configuration
 # Override with environment variable

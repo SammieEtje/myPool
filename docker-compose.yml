@@ -1,16 +1,16 @@
 services:
   # PostgreSQL database
   db:
-    image: postgres:18.1-alpine
+    image: postgres:15-alpine
     container_name: f1betting-db
     volumes:
-      - postgres_data:/var/lib/postgresql
+      - postgres_data:/var/lib/postgresql/data
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-f1betting}
       POSTGRES_USER: ${POSTGRES_USER:-f1user}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set}
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-f1user}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-f1user} -d ${POSTGRES_DB:-f1betting}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -29,6 +29,9 @@ services:
       - .env
     ports:
       - "8000:8000"
+    volumes:
+      - ./templates:/app/templates
+      - ./static:/app/static
     depends_on:
       db:
         condition: service_healthy
@@ -41,7 +44,7 @@ services:
     restart: unless-stopped
     networks:
       - f1betting-network
-    command: sh -c "python manage.py migrate --noinput && gunicorn f1betting.wsgi:application --bind 0.0.0.0:8000 --workers $${GUNICORN_WORKERS:-4} --timeout 60 --access-logfile - --error-logfile - --log-level info"
+    command: sh -c "python manage.py migrate --noinput && python manage.py runserver 0.0.0.0:8000"
 
 volumes:
   postgres_data:
