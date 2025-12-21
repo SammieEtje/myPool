@@ -222,7 +222,7 @@
   }
 
   .race-card-header {
-    @apply flex justify-between items-start mb-4;
+    @apply flex justify-between items-start p-6;
   }
 
   .race-details {
