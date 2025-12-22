@@ -16,7 +16,7 @@ pylint==3.0.2
 # Align versions with `requirements.txt` to avoid resolver conflicts
 flake8==7.0.0
 black==24.3.0
-isort==5.12.0
+isort==7.0.0
 pylint==3.0.2
 mypy==1.19.1
 
