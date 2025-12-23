@@ -5,7 +5,7 @@ PyJWT==2.10.1
 cryptography==44.0.1
 django-cors-headers==4.9.0
 requests==2.32.5
-fido2==1.2.0
+fido2==2.0.0
 python-decouple==3.8
 whitenoise==6.11.0
 gunicorn==23.0.0
