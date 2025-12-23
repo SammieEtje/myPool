@@ -21,7 +21,7 @@ pylint==3.0.2
 mypy==1.19.1
 
 # Security
-bandit==1.7.5
+bandit==1.9.2
 safety==3.7.0
 
 # Performance
