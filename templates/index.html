@@ -89,21 +89,21 @@
         </div>
 
         <!-- Upcoming Races -->
-        <div id="upcomingRacesSection" class="mb-12 hidden">
-            <h2 class="section-title text-xl font-bold mb-4 text-gray-400">Upcoming Races</h2>
-            <div id="upcomingRacesList" class="grid-cols-auto"></div>
+        <div id="upcomingRacesSection" class="mb-8 hidden">
+            <h2 class="section-title text-lg font-bold mb-3 text-gray-400">Upcoming Races</h2>
+            <div id="upcomingRacesList" class="flex flex-col gap-2"></div>
         </div>
 
         <!-- Awaiting Results -->
-        <div id="awaitingResultsSection" class="mb-12 hidden">
-            <h2 class="section-title text-xl font-bold mb-4 text-gray-400">Awaiting Results</h2>
-            <div id="awaitingResultsList" class="grid-cols-auto"></div>
+        <div id="awaitingResultsSection" class="mb-8 hidden">
+            <h2 class="section-title text-lg font-bold mb-3 text-gray-400">Awaiting Results</h2>
+            <div id="awaitingResultsList" class="flex flex-col gap-2"></div>
         </div>
 
         <!-- Completed Races -->
         <div id="completedRacesSection" class="hidden">
-            <h2 class="section-title text-xl font-bold mb-4 text-gray-400">Completed Races</h2>
-            <div id="completedRacesList" class="grid-cols-auto"></div>
+            <h2 class="section-title text-lg font-bold mb-3 text-gray-400">Completed Races</h2>
+            <div id="completedRacesList" class="flex flex-col gap-2"></div>
         </div>
 
         <div class="loading hidden" id="homeLoading">
@@ -319,6 +319,23 @@
                     </button>
                 </div>
 
+            </div>
+        </div>
+    </template>
+
+    <!-- Compact Race Card Template (for grids) -->
+    <template id="template-race-card-compact">
+        <div class="race-card-compact">
+            <div class="race-card-compact-info">
+                <span class="race-round-compact"></span>
+                <span class="race-name-compact"></span>
+                <span class="bet-status-icon-compact hidden">✓</span>
+            </div>
+            <div class="race-card-compact-action">
+                <span class="badge race-status-badge-compact"></span>
+                <button class="btn btn-sm btn-primary btn-race-action-compact" data-race-id="">
+                    Bet
+                </button>
             </div>
         </div>
     </template>

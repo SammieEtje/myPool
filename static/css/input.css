@@ -271,6 +271,47 @@
     @apply opacity-100;
   }
 
+  /* Compact Race Card (for grids) */
+  .race-card-compact {
+    @apply flex items-center justify-between bg-gray-900 border border-gray-800 rounded-lg px-4 py-3 transition-all duration-200 hover:border-gray-700 hover:bg-gray-800;
+  }
+
+  .race-card-compact.betting-open {
+    @apply border-l-4 border-l-success;
+  }
+
+  .race-card-compact.betting-closed {
+    @apply border-l-4 border-l-danger;
+  }
+
+  .race-card-compact.race-completed {
+    @apply opacity-60 border-l-4 border-l-gray-600;
+  }
+
+  .race-card-compact-info {
+    @apply flex items-center gap-3;
+  }
+
+  .race-round-compact {
+    @apply text-xs text-gray-500 font-bold min-w-[32px];
+  }
+
+  .race-name-compact {
+    @apply font-semibold text-white;
+  }
+
+  .bet-status-icon-compact {
+    @apply text-success text-sm;
+  }
+
+  .race-card-compact-action {
+    @apply flex items-center gap-3;
+  }
+
+  .race-status-badge-compact {
+    @apply text-xs;
+  }
+
   /* Bet Status Icon */
   .bet-status-icon {
     @apply inline-flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold;

@@ -1,6 +1,61 @@
 // F1 Betting Pool - Single Page Application
 // ============================================
 
+// Country name to ISO 3166-1 alpha-2 code mapping
+const countryCodes = {
+  'Australia': 'AU',
+  'Austria': 'AT',
+  'Azerbaijan': 'AZ',
+  'Bahrain': 'BH',
+  'Belgium': 'BE',
+  'Brazil': 'BR',
+  'Canada': 'CA',
+  'China': 'CN',
+  'France': 'FR',
+  'Germany': 'DE',
+  'Hungary': 'HU',
+  'Italy': 'IT',
+  'Japan': 'JP',
+  'Mexico': 'MX',
+  'Monaco': 'MC',
+  'Netherlands': 'NL',
+  'Qatar': 'QA',
+  'Saudi Arabia': 'SA',
+  'Singapore': 'SG',
+  'Spain': 'ES',
+  'UAE': 'AE',
+  'United Arab Emirates': 'AE',
+  'UK': 'GB',
+  'United Kingdom': 'GB',
+  'Great Britain': 'GB',
+  'USA': 'US',
+  'United States': 'US',
+  'Las Vegas': 'US',
+  'Miami': 'US',
+  'Portugal': 'PT',
+  'Russia': 'RU',
+  'Turkey': 'TR',
+  'Vietnam': 'VN',
+  'South Africa': 'ZA',
+};
+
+// Convert country code to flag emoji using regional indicator symbols
+function countryCodeToFlag(countryCode) {
+  const codePoints = countryCode
+    .toUpperCase()
+    .split('')
+    .map(char => 127397 + char.charCodeAt(0));
+  return String.fromCodePoint(...codePoints);
+}
+
+function getCountryFlag(country) {
+  const code = countryCodes[country];
+  if (code) {
+    return countryCodeToFlag(code);
+  }
+  return String.fromCodePoint(127937); // Checkered flag
+}
+
 const app = {
   currentUser: null,
   currentPage: 'home',
@@ -185,33 +240,33 @@ const app = {
       container.appendChild(this.createRaceCard(nextRace, true));
     }
 
-    // Render Upcoming Races
+    // Render Upcoming Races (compact)
     if (upcoming.length > 0) {
       const section = document.getElementById('upcomingRacesSection');
       const list = document.getElementById('upcomingRacesList');
       section.classList.remove('hidden');
       upcoming.forEach(race => {
-        list.appendChild(this.createRaceCard(race));
+        list.appendChild(this.createCompactRaceCard(race));
       });
     }
 
-    // Render Awaiting Results
+    // Render Awaiting Results (compact)
     if (awaitingResults.length > 0) {
       const section = document.getElementById('awaitingResultsSection');
       const list = document.getElementById('awaitingResultsList');
       section.classList.remove('hidden');
       awaitingResults.forEach(race => {
-        list.appendChild(this.createRaceCard(race));
+        list.appendChild(this.createCompactRaceCard(race));
       });
     }
 
-    // Render Completed Races
+    // Render Completed Races (compact)
     if (completed.length > 0) {
       const section = document.getElementById('completedRacesSection');
       const list = document.getElementById('completedRacesList');
       section.classList.remove('hidden');
       completed.forEach(race => {
-        list.appendChild(this.createRaceCard(race));
+        list.appendChild(this.createCompactRaceCard(race));
       });
     }
 
@@ -456,7 +511,7 @@ const app = {
 
     // Basic info
     card.querySelector('.race-round').textContent = `Round ${race.round_number}`;
-    card.querySelector('.race-name').textContent = race.name;
+    card.querySelector('.race-name').textContent = `${getCountryFlag(race.country)} ${race.name}`;
     card.querySelector('.race-location').textContent = `${race.location}, ${race.country}`;
     card.querySelector('.race-datetime').textContent = new Date(race.race_datetime).toLocaleString();
     card.querySelector('.race-deadline-text').textContent = `Betting closes: ${new Date(race.betting_deadline).toLocaleString()}`;
@@ -535,6 +590,81 @@ const app = {
       // Betting is closed, no bet placed
       actionBtn.disabled = true;
       actionBtn.textContent = 'Betting Closed';
+    }
+
+    return card;
+  },
+
+  // Create compact race card for grids
+  createCompactRaceCard(race) {
+    const template = document.getElementById('template-race-card-compact');
+    const cardElement = template.content.cloneNode(true);
+    const card = cardElement.querySelector('.race-card-compact');
+
+    const isCompleted = race.status === 'completed';
+    const isBettingOpen = race.is_betting_open;
+    const hasBet = race.user_has_bet;
+
+    // Add status classes
+    if (isCompleted) {
+      card.classList.add('race-completed');
+    } else if (isBettingOpen) {
+      card.classList.add('betting-open');
+    } else {
+      card.classList.add('betting-closed');
+    }
+
+    // Basic info
+    card.querySelector('.race-round-compact').textContent = `R${race.round_number}`;
+    card.querySelector('.race-name-compact').textContent = `${getCountryFlag(race.country)} ${race.name}`;
+
+    // Bet status icon
+    if (hasBet) {
+      const icon = card.querySelector('.bet-status-icon-compact');
+      icon.classList.remove('hidden');
+    }
+
+    // Status badge
+    const statusBadge = card.querySelector('.race-status-badge-compact');
+    if (isCompleted) {
+      statusBadge.textContent = 'Done';
+      statusBadge.className = 'badge badge-secondary race-status-badge-compact';
+    } else if (isBettingOpen) {
+      statusBadge.textContent = 'Open';
+      statusBadge.className = 'badge badge-success race-status-badge-compact';
+    } else {
+      statusBadge.textContent = 'Closed';
+      statusBadge.className = 'badge badge-error race-status-badge-compact';
+    }
+
+    // Action button
+    const actionBtn = card.querySelector('.btn-race-action-compact');
+    actionBtn.dataset.raceId = race.id;
+
+    if (!this.currentUser) {
+      actionBtn.disabled = true;
+      actionBtn.textContent = 'Login';
+    } else if (isCompleted) {
+      actionBtn.textContent = 'Results';
+      actionBtn.classList.remove('btn-primary');
+      actionBtn.classList.add('btn-secondary');
+      actionBtn.addEventListener('click', () => this.viewRaceResults(race.id));
+    } else if (hasBet && !isBettingOpen) {
+      actionBtn.disabled = true;
+      actionBtn.textContent = 'Waiting';
+      actionBtn.classList.remove('btn-primary');
+      actionBtn.classList.add('btn-outline');
+    } else if (hasBet && isBettingOpen) {
+      actionBtn.textContent = 'Edit';
+      actionBtn.classList.remove('btn-primary');
+      actionBtn.classList.add('btn-secondary');
+      actionBtn.addEventListener('click', () => this.loadBettingPage(race));
+    } else if (isBettingOpen) {
+      actionBtn.textContent = 'Bet';
+      actionBtn.addEventListener('click', () => this.loadBettingPage(race));
+    } else {
+      actionBtn.disabled = true;
+      actionBtn.textContent = 'Closed';
     }
 
     return card;
