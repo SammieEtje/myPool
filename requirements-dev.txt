@@ -14,7 +14,7 @@ factory-boy==3.3.3
 pylint==3.0.2
 # Code Quality
 # Align versions with `requirements.txt` to avoid resolver conflicts
-flake8==7.0.0
+flake8==7.3.0
 black==24.3.0
 isort==7.0.0
 pylint==3.0.2
