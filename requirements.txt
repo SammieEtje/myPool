@@ -16,4 +16,4 @@ dj-database-url==3.0.1
 
 # Development
 black==24.3.0
-flake8==7.0.0
+flake8==7.3.0
